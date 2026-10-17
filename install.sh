@@ -56,7 +56,7 @@ echo "[4/5] Generating global shortcuts in $PREFIX/bin/..."
 # 'tiktok' shortcut
 cat << 'EOF' > "$PREFIX/bin/tiktok"
 #!/data/data/com.termux/files/usr/bin/bash
-exec /storage/emulated/0/Termux/master_run.sh "$@"
+exec bash /storage/emulated/0/Termux/master_run.sh "$@"
 EOF
 
 # 'dl' shortcut
@@ -69,8 +69,8 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-/storage/emulated/0/Termux/download.sh "$@"
-exec /storage/emulated/0/Termux/master_run.sh
+bash /storage/emulated/0/Termux/download.sh "$@"
+exec bash /storage/emulated/0/Termux/master_run.sh
 EOF
 
 echo "[✓] Shortcuts created: 'dl' and 'tiktok'."
