@@ -5,7 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.1.1
+#  @version     2.1.2
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -33,7 +33,7 @@ readonly INPUT_DIRS=(
     "$SD/Download/yt-dlp"
 )
 readonly VIDEO_OUT="$SD/Movies/NormalizedVideo"
-readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.media_processor.log"
+readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/media_processor_log.txt"
 
 readonly TARGET_LUFS="${TARGET_LUFS:--12}"
 readonly AUDIO_BITRATE="${AUDIO_BITRATE:-192k}"
@@ -192,18 +192,25 @@ for dir in "${INPUT_DIRS[@]}"; do
                     "${vcodec_args[@]}" \
                     -af "volume=${linear_gain}dB" -c:a aac -b:a "$AUDIO_BITRATE" \
                     -movflags +faststart "$tmp_path" 2>>"$LOG"; then
-                printf "  ${C_YELLOW}[!] Audio too short/corrupt for normalizer. Using safe copy...${C_RESET}\n"
+                printf "  ${C_YELLOW}[!] Audio too short/corrupt. Using safe copy...${C_RESET}\n"
                 log "  WARNING: Audio gain render failed for $orig_name. Attempting -c:a copy fallback."
                 if ! ffmpeg -hide_banner -nostats -y \
                         -i "$src" -map 0:v:0 -map 0:a:0 \
                         "${vcodec_args[@]}" -c:a copy \
                         -movflags +faststart "$tmp_path" 2>>"$LOG"; then
-                    printf "  ${C_RED}[ERROR] Safe fallback failed. File unprocessable.${C_RESET}\n" >&2
-                    log "  ERROR: Safe fallback failed for $orig_name"
-                    rm -f "$tmp_path"
-                    (( ++count_fail )) || true
-                    CURRENT_TMP=""
-                    continue
+                    printf "  ${C_YELLOW}[!] Audio completely unreadable. Stripping audio to save video...${C_RESET}\n"
+                    log "  WARNING: Safe copy failed for $orig_name. Attempting -an (video only) fallback."
+                    if ! ffmpeg -hide_banner -nostats -y \
+                            -i "$src" -map 0:v:0 \
+                            "${vcodec_args[@]}" -an \
+                            -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                        printf "  ${C_RED}[ERROR] Ultimate fallback failed. File unprocessable.${C_RESET}\n" >&2
+                        log "  ERROR: Ultimate fallback failed for $orig_name"
+                        rm -f "$tmp_path"
+                        (( ++count_fail )) || true
+                        CURRENT_TMP=""
+                        continue
+                    fi
                 fi
             fi
         fi

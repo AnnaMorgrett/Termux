@@ -31,7 +31,7 @@ readonly INPUT_DIRS=(
     "$SD/Download/yt-dlp"
 )
 readonly ASSET_OUT="$SD/Pictures/TikTok_Assets"
-readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.media_processor.log"
+readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/media_processor_log.txt"
 
 # ── Usage & Help ──────────────────────────────────────────────────────────────
 show_help() {
