@@ -1,0 +1,24 @@
+# Central debug logs and temporary files
+*.log
+*.lock
+*.lock.dir/
+*.tmp
+*.tmp.mp4
+
+# Download fragments and partially downloaded media
+*.part
+*.ytdl
+
+# Local testing and environment overrides
+.env
+local_test/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
