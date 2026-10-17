@@ -5,18 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.1.0
-#
-#  Audio Normalization Theory:
-#  ---------------------------
-#  Dynamic range compression (DRC) alters musical balance and causes audible
-#  "pumping" artifacts. This script enforces strictly constant linear volume
-#  gain calculated from ITU-R BS.1770 / EBU R128 integrated loudness metrics:
-#
-#      Linear Gain (dB) = TARGET_LUFS - Measured_LUFS
-#
-#  Pass 1: Probe integrated loudness via FFmpeg 'loudnorm' measurement filter.
-#  Pass 2: Apply calculated gain via FFmpeg 'volume' filter with high-quality AAC.
+#  @version     2.1.1
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -53,7 +42,7 @@ CURRENT_TMP=""
 
 # ── Usage & Help ──────────────────────────────────────────────────────────────
 show_help() {
-    cat << EOF
+    cat << H_EOF
 Usage: normalize.sh [OPTIONS]
 
 Scans TikTok and yt-dlp folders for video files, normalizes audio to -12 LUFS
@@ -77,7 +66,7 @@ Environment Overrides:
 
 Options:
   -h, --help       Display this documentation.
-EOF
+H_EOF
 }
 
 if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
@@ -203,12 +192,19 @@ for dir in "${INPUT_DIRS[@]}"; do
                     "${vcodec_args[@]}" \
                     -af "volume=${linear_gain}dB" -c:a aac -b:a "$AUDIO_BITRATE" \
                     -movflags +faststart "$tmp_path" 2>>"$LOG"; then
-                printf "  ${C_RED}[ERROR] Audio encoding failed.${C_RESET}\n" >&2
-                log "  ERROR: Audio gain render failed for $orig_name"
-                rm -f "$tmp_path"
-                (( ++count_fail )) || true
-                CURRENT_TMP=""
-                continue
+                printf "  ${C_YELLOW}[!] Audio too short/corrupt for normalizer. Using safe copy...${C_RESET}\n"
+                log "  WARNING: Audio gain render failed for $orig_name. Attempting -c:a copy fallback."
+                if ! ffmpeg -hide_banner -nostats -y \
+                        -i "$src" -map 0:v:0 -map 0:a:0 \
+                        "${vcodec_args[@]}" -c:a copy \
+                        -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                    printf "  ${C_RED}[ERROR] Safe fallback failed. File unprocessable.${C_RESET}\n" >&2
+                    log "  ERROR: Safe fallback failed for $orig_name"
+                    rm -f "$tmp_path"
+                    (( ++count_fail )) || true
+                    CURRENT_TMP=""
+                    continue
+                fi
             fi
         fi
 
