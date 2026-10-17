@@ -21,7 +21,7 @@ else
 fi
 
 readonly REPO_URL="https://github.com/AnnaMorgrett/Termux.git"
-CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 
 printf "${C_BOLD}==================================================${C_RESET}\n"
 printf "${C_BOLD}  Media Pipeline Installer (Termux & PC)          ${C_RESET}\n"
