@@ -44,7 +44,7 @@ readonly INPUT_DIRS=(
     "$SD/Download/yt-dlp"
 )
 readonly VIDEO_OUT="$SD/Movies/NormalizedVideo"
-readonly LOG="$SD/Documents/.media_processor.log"
+readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.media_processor.log"
 
 readonly TARGET_LUFS="${TARGET_LUFS:--12}"
 readonly AUDIO_BITRATE="${AUDIO_BITRATE:-192k}"

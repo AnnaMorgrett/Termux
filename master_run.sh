@@ -38,7 +38,7 @@ else
     LOCKFILE="${TMPDIR:-/tmp}/media_pipeline.lock"
 fi
 
-readonly LOG="$SD/Documents/.media_processor.log"
+readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.media_processor.log"
 readonly LOG_MAX="${LOG_MAX_BYTES:-$(( 2 * 1024 * 1024 ))}"  # 2 MB default
 
 # ── Usage & Help ──────────────────────────────────────────────────────────────
