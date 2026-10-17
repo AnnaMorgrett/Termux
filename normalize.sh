@@ -145,7 +145,7 @@ for dir in "${INPUT_DIRS[@]}"; do
 
         # Preserve compatible bitstreams without generational loss; re-encode others
         case "$vcodec" in
-            h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
+            h264|hevc|mpeg4|none|bvc*) vcodec_args=("-c:v" "copy") ;;
             *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
         esac
 
