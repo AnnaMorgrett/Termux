@@ -1,12 +1,26 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════════════
-#  move_assets.sh — Non-video asset scanner, relocator, & media sync
-#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
-# ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+#  @file        move_assets.sh
+#  @brief       Non-video asset scanner, safe relocator, & MediaScanner synchronizer.
+#  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
+#  @license     MIT
+#  @version     2.1.0
+# ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
-# Auto-detect Environment
-if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+# ── Color Output (ANSI) ───────────────────────────────────────────────────────
+if [[ -t 1 ]]; then
+    C_BLUE='\033[0;34m'
+    C_GREEN='\033[0;32m'
+    C_YELLOW='\033[0;33m'
+    C_RED='\033[0;31m'
+    C_RESET='\033[0m'
+else
+    C_BLUE='' C_GREEN='' C_YELLOW='' C_RED='' C_RESET=''
+fi
+
+# ── Environment & Path Discovery ──────────────────────────────────────────────
+if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
@@ -19,6 +33,37 @@ readonly INPUT_DIRS=(
 readonly ASSET_OUT="$SD/Pictures/TikTok_Assets"
 readonly LOG="$SD/Documents/.media_processor.log"
 
+# ── Usage & Help ──────────────────────────────────────────────────────────────
+show_help() {
+    cat << EOF
+Usage: move_assets.sh [OPTIONS]
+
+Scans TikTok and yt-dlp folders for non-video assets (photos, stickers, GIFs),
+relocates them safely to Pictures/TikTok_Assets without overwriting, and triggers
+Android's native MediaScanner.
+
+Scanned Directories:
+  - $SD/DCIM/TikTok
+  - $SD/Download/yt-dlp
+
+Target Directory:
+  - $ASSET_OUT
+
+Supported Formats:
+  Images:      JPG, JPEG, PNG, BMP, TIFF, TIF, HEIC, HEIF, SVG
+  Animations:  GIF, WEBP
+
+Options:
+  -h, --help   Display this documentation.
+EOF
+}
+
+if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
+    show_help
+    exit 0
+fi
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
 log() {
     printf '[%s] [ASSETS] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"
 }
@@ -42,8 +87,11 @@ get_unique_dest() {
     printf '%s' "$out"
 }
 
-mkdir -p "$ASSET_OUT"
-log "Starting asset scan and relocation..."
+# ── Execution ─────────────────────────────────────────────────────────────────
+mkdir -p "$ASSET_OUT" "$(dirname "$LOG")"
+log "Beginning non-video asset scan..."
+printf "${C_BLUE}[*] Scanning for non-video assets...${C_RESET}\n"
+
 moved_count=0
 
 for dir in "${INPUT_DIRS[@]}"; do
@@ -55,9 +103,11 @@ for dir in "${INPUT_DIRS[@]}"; do
         if mv -n "$src" "$dest" 2>/dev/null; then
             media_scan "$dest"
             log "MOVED & SCANNED: $filename -> $(basename "$dest")"
+            printf "  ${C_GREEN}[✓] Relocated:${C_RESET} %s -> %s\n" "$filename" "$(basename "$dest")"
             (( ++moved_count )) || true
         else
             log "ERROR: Failed moving $filename"
+            printf "  ${C_RED}[!] Error moving:${C_RESET} %s\n" "$filename" >&2
         fi
     done < <(find "$dir" -maxdepth 1 -type f \( \
                  -iname '*.jpg'  -o -iname '*.jpeg' -o -iname '*.png'  \
@@ -67,5 +117,5 @@ for dir in "${INPUT_DIRS[@]}"; do
              \) -print0 2>/dev/null)
 done
 
-log "Asset processing completed. Total assets relocated: $moved_count"
-printf 'Assets relocated: %d\n' "$moved_count"
+log "Asset stage completed. Relocated count: $moved_count"
+printf "${C_GREEN}[✓] Assets relocated:${C_RESET} %d\n" "$moved_count"

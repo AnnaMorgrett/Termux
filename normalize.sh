@@ -1,13 +1,39 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════════════
-#  normalize.sh — Video sanitizer, linear audio normalizer (-12 LUFS),
-#                 integrity verifier, & media sync
-#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
-# ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
+#  @file        normalize.sh
+#  @brief       Video sanitizer, constant linear audio normalizer (-12 LUFS),
+#               output integrity verifier, and Android MediaScanner trigger.
+#  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
+#  @license     MIT
+#  @version     2.1.0
+#
+#  Audio Normalization Theory:
+#  ---------------------------
+#  Dynamic range compression (DRC) alters musical balance and causes audible
+#  "pumping" artifacts. This script enforces strictly constant linear volume
+#  gain calculated from ITU-R BS.1770 / EBU R128 integrated loudness metrics:
+#
+#      Linear Gain (dB) = TARGET_LUFS - Measured_LUFS
+#
+#  Pass 1: Probe integrated loudness via FFmpeg 'loudnorm' measurement filter.
+#  Pass 2: Apply calculated gain via FFmpeg 'volume' filter with high-quality AAC.
+# ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
-# Auto-detect Environment
-if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+# ── Color Output (ANSI) ───────────────────────────────────────────────────────
+if [[ -t 1 ]]; then
+    C_BLUE='\033[0;34m'
+    C_GREEN='\033[0;32m'
+    C_YELLOW='\033[0;33m'
+    C_RED='\033[0;31m'
+    C_CYAN='\033[0;36m'
+    C_RESET='\033[0m'
+else
+    C_BLUE='' C_GREEN='' C_YELLOW='' C_RED='' C_CYAN='' C_RESET=''
+fi
+
+# ── Environment & Config ──────────────────────────────────────────────────────
+if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
@@ -19,10 +45,47 @@ readonly INPUT_DIRS=(
 )
 readonly VIDEO_OUT="$SD/Movies/NormalizedVideo"
 readonly LOG="$SD/Documents/.media_processor.log"
-readonly TARGET_LUFS=-12
+
+readonly TARGET_LUFS="${TARGET_LUFS:--12}"
+readonly AUDIO_BITRATE="${AUDIO_BITRATE:-192k}"
 
 CURRENT_TMP=""
 
+# ── Usage & Help ──────────────────────────────────────────────────────────────
+show_help() {
+    cat << EOF
+Usage: normalize.sh [OPTIONS]
+
+Scans TikTok and yt-dlp folders for video files, normalizes audio to -12 LUFS
+using pure constant linear gain (strictly no dynamic range compression), sanitizes
+filenames, and verifies file integrity before deleting the original.
+
+Scanned Directories:
+  - $SD/DCIM/TikTok
+  - $SD/Download/yt-dlp
+
+Target Directory:
+  - $VIDEO_OUT
+
+Supported Formats:
+  MP4, MKV, WEBM, MOV, AVI, 3GP, TS, FLV, M4V
+
+Environment Overrides:
+  TARGET_LUFS      Target loudness in LUFS (Default: -12)
+  AUDIO_BITRATE    Audio bitrate for normalized AAC stream (Default: 192k)
+  MEDIA_DIR        Custom root media directory (Default: $SD)
+
+Options:
+  -h, --help       Display this documentation.
+EOF
+}
+
+if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
+    show_help
+    exit 0
+fi
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
 log() {
     printf '[%s] [NORMALIZE] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"
 }
@@ -54,11 +117,14 @@ get_unique_dest() {
     printf '%s' "$out"
 }
 
-# ── Clean incomplete temp file on termination ─────────────────────────
+# ── Cleanup Handler ───────────────────────────────────────────────────────────
 trap '[[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"; log "Video processing interrupted"; exit 130' INT TERM HUP
 
-mkdir -p "$VIDEO_OUT"
-log "Starting video normalization pass..."
+# ── Execution ─────────────────────────────────────────────────────────────────
+mkdir -p "$VIDEO_OUT" "$(dirname "$LOG")"
+log "Beginning video normalization stage..."
+printf "${C_BLUE}[*] Scanning for pending videos...${C_RESET}\n"
+
 count_ok=0
 count_fail=0
 count_skip=0
@@ -72,39 +138,40 @@ for dir in "${INPUT_DIRS[@]}"; do
         tmp_path="${target_path%.mp4}.tmp.mp4"
         CURRENT_TMP="$tmp_path"
 
-        echo "[*] Processing: $orig_name"
+        printf "${C_CYAN}[*] Processing:${C_RESET} %s\n" "$orig_name"
         log "Processing video: $orig_name"
 
-        # ── Probe video stream codec ─────────────────────────────────
+        # ── 1. Probe Video Codec ──────────────────────────────────────
         vcodec=$(ffprobe -v error -select_streams v:0 \
                     -show_entries stream=codec_name -of csv=p=0 \
                     "$src" 2>/dev/null | head -1)
 
         if [[ -z "$vcodec" ]]; then
-            echo "  [SKIP] No video stream detected"
+            printf "  ${C_YELLOW}[SKIP] No video stream detected.${C_RESET}\n"
             log "  SKIPPED: No video stream detected in $orig_name"
             (( ++count_skip )) || true
             CURRENT_TMP=""
             continue
         fi
 
+        # Preserve compatible bitstreams without generational loss; re-encode others
         case "$vcodec" in
             h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
             *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
         esac
 
-        # ── Probe audio stream ───────────────────────────────────────
+        # ── 2. Probe Audio Codec ──────────────────────────────────────
         acodec=$(ffprobe -v error -select_streams a:0 \
                     -show_entries stream=codec_name -of csv=p=0 \
                     "$src" 2>/dev/null | head -1)
 
         if [[ -z "$acodec" ]]; then
-            echo "  [Audio] No audio stream; remuxing video"
+            printf "  ${C_YELLOW}[Audio] Stream absent; remuxing video only.${C_RESET}\n"
             log "  No audio stream detected; remuxing video only"
             if ! ffmpeg -hide_banner -nostats -y \
                     -i "$src" -map 0:v:0 "${vcodec_args[@]}" \
                     -movflags +faststart -an "$tmp_path" 2>>"$LOG"; then
-                echo "  [ERROR] Remux failed"
+                printf "  ${C_RED}[ERROR] Remux operation failed.${C_RESET}\n" >&2
                 log "  ERROR: Remux failed for $orig_name"
                 rm -f "$tmp_path"
                 (( ++count_fail )) || true
@@ -112,7 +179,7 @@ for dir in "${INPUT_DIRS[@]}"; do
                 continue
             fi
         else
-            # Pass 1: Measure integrated loudness (LUFS)
+            # ── 3. Pass 1: Measure Integrated Loudness (LUFS) ─────────
             probe_stats=$(ffmpeg -hide_banner -nostats -i "$src" \
                              -af loudnorm=print_format=json \
                              -f null /dev/null 2>&1)
@@ -125,16 +192,18 @@ for dir in "${INPUT_DIRS[@]}"; do
             else
                 linear_gain=$(awk "BEGIN {printf \"%.2f\", (${TARGET_LUFS}) - (${lufs_val})}")
             fi
-            echo "  [Audio] Measured: ${lufs_val:-N/A} LUFS -> Gain: ${linear_gain} dB (Target: ${TARGET_LUFS} LUFS)"
+
+            printf "  ${C_BLUE}[Audio] Measured:${C_RESET} %s LUFS -> ${C_BLUE}Linear Gain:${C_RESET} %s dB (Target: %s LUFS)\n" \
+                   "${lufs_val:-N/A}" "$linear_gain" "$TARGET_LUFS"
             log "  LUFS: ${lufs_val:-N/A} -> Applying Constant Linear Gain: ${linear_gain} dB"
 
-            # Pass 2: Apply constant linear volume gain (Zero DRC)
+            # ── 4. Pass 2: Apply Constant Linear Gain (Zero DRC) ──────
             if ! ffmpeg -hide_banner -nostats -y \
                     -i "$src" -map 0:v:0 -map 0:a:0 \
                     "${vcodec_args[@]}" \
-                    -af "volume=${linear_gain}dB" -c:a aac -b:a 192k \
+                    -af "volume=${linear_gain}dB" -c:a aac -b:a "$AUDIO_BITRATE" \
                     -movflags +faststart "$tmp_path" 2>>"$LOG"; then
-                echo "  [ERROR] Normalization render failed"
+                printf "  ${C_RED}[ERROR] Audio encoding failed.${C_RESET}\n" >&2
                 log "  ERROR: Audio gain render failed for $orig_name"
                 rm -f "$tmp_path"
                 (( ++count_fail )) || true
@@ -143,7 +212,7 @@ for dir in "${INPUT_DIRS[@]}"; do
             fi
         fi
 
-        # ── Output Verification: Non-zero size & valid duration ───────
+        # ── 5. Verification & Atomic Commit ───────────────────────────
         out_size=$(wc -c < "$tmp_path" 2>/dev/null || echo 0)
         if (( out_size > 0 )) \
            && ffprobe -v error -i "$tmp_path" \
@@ -152,12 +221,12 @@ for dir in "${INPUT_DIRS[@]}"; do
             mv -f "$tmp_path" "$target_path"
             rm -f "$src"
             media_scan "$target_path"
-            echo "  [✓] Verified & Saved: $(basename "$target_path")"
+            printf "  ${C_GREEN}[✓] Verified & Saved:${C_RESET} %s (%s bytes)\n" "$(basename "$target_path")" "$out_size"
             log "  SUCCESS: $orig_name -> $(basename "$target_path") [${out_size} bytes]"
             (( ++count_ok )) || true
         else
             rm -f "$tmp_path"
-            echo "  [ERROR] Verification check failed. Original preserved."
+            printf "  ${C_RED}[ERROR] Verification check failed. Source file preserved.${C_RESET}\n" >&2
             log "  ERROR: Verification failed for $orig_name. Source preserved."
             (( ++count_fail )) || true
         fi
@@ -170,5 +239,5 @@ for dir in "${INPUT_DIRS[@]}"; do
              \) -print0 2>/dev/null)
 done
 
-log "Video processing completed. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip"
-printf 'Summary: Videos OK=%d, Fail=%d, Skipped=%d\n' "$count_ok" "$count_fail" "$count_skip"
+log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip"
+printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip"

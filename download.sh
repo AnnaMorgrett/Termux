@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════════════
-#  download.sh — Dedicated yt-dlp media downloader
-#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
-# ═══════════════════════════════════════════════════════════════════════
-set -eu
+# ═══════════════════════════════════════════════════════════════════════════════
+#  @file        download.sh
+#  @brief       Dedicated media ingestion wrapper powered by yt-dlp.
+#  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
+#  @license     MIT
+#  @version     2.1.0
+# ═══════════════════════════════════════════════════════════════════════════════
+set -euo pipefail
 
-# Auto-detect Environment
-if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+# ── Color Output (ANSI) ───────────────────────────────────────────────────────
+if [[ -t 1 ]]; then
+    C_BLUE='\033[0;34m'
+    C_GREEN='\033[0;32m'
+    C_RED='\033[0;31m'
+    C_RESET='\033[0m'
+else
+    C_BLUE='' C_GREEN='' C_RED='' C_RESET=''
+fi
+
+# ── Environment & Path Discovery ──────────────────────────────────────────────
+if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
@@ -14,18 +27,52 @@ fi
 
 readonly DL_DIR="$SD/Download/yt-dlp"
 
-if [[ $# -lt 1 ]]; then
-    echo "Usage: dl <url> [extra yt-dlp options...]" >&2
-    exit 1
+# ── Usage & Help ──────────────────────────────────────────────────────────────
+show_help() {
+    cat << EOF
+Usage: dl <URL> [OPTIONS...]
+
+Downloads media via yt-dlp directly into the ingestion folder:
+  Target: $DL_DIR
+
+Arguments:
+  <URL>             The video or audio URL (TikTok, YouTube, Facebook, etc.)
+  [OPTIONS...]      Any additional flags forwarded directly to yt-dlp
+
+Environment Overrides:
+  MEDIA_DIR         Custom root media folder (Default: $SD)
+
+Examples:
+  dl "https://www.tiktok.com/@user/video/123456789"
+  dl "https://youtu.be/dQw4w9WgXcQ" -f bestvideo+bestaudio
+EOF
+}
+
+if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
+    show_help
+    exit 0
 fi
 
+if [[ $# -lt 1 ]]; then
+    printf "${C_RED}[ERROR] Missing URL argument.${C_RESET}\n" >&2
+    show_help >&2
+    exit 2
+fi
+
+# ── Download Routine ──────────────────────────────────────────────────────────
 mkdir -p "$DL_DIR"
 
 url="$1"
 shift
 
-echo "[*] Downloading: $url"
-yt-dlp --no-mtime \
-       -P "$DL_DIR" \
-       -o "%(title)s.%(ext)s" \
-       "$@" "$url"
+printf "${C_BLUE}[*] Ingesting media via yt-dlp:${C_RESET} %s\n" "$url"
+printf "${C_BLUE}[*] Destination folder:${C_RESET} %s\n" "$DL_DIR"
+
+yt-dlp \
+    --no-mtime \
+    -P "$DL_DIR" \
+    -o "%(title)s.%(ext)s" \
+    "$@" \
+    "$url"
+
+printf "${C_GREEN}[✓] Download finished successfully.${C_RESET}\n"
