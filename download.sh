@@ -1,14 +1,21 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════
 #  download.sh — Dedicated yt-dlp media downloader
-#  Target Location: /storage/emulated/0/Termux/download.sh
+#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
 # ═══════════════════════════════════════════════════════════════════════
 set -eu
 
-readonly DL_DIR="/storage/emulated/0/Download/yt-dlp"
+# Auto-detect Environment
+if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+    SD="${MEDIA_DIR:-/storage/emulated/0}"
+else
+    SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
+fi
+
+readonly DL_DIR="$SD/Download/yt-dlp"
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: download.sh <url> [extra yt-dlp options...]" >&2
+    echo "Usage: dl <url> [extra yt-dlp options...]" >&2
     exit 1
 fi
 

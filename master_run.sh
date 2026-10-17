@@ -1,15 +1,23 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════
 #  master_run.sh — Orchestration controller
 #  Handles locks, debug logs, auto-updates, and pipeline execution
-#  Target Location: /storage/emulated/0/Termux/master_run.sh
+#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
 # ═══════════════════════════════════════════════════════════════════════
 set -u
 
-readonly SD="/storage/emulated/0"
-readonly SCRIPTS_DIR="$SD/Termux"
+readonly SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Auto-detect Environment
+if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+    SD="${MEDIA_DIR:-/storage/emulated/0}"
+    LOCKFILE="${TMPDIR:-/data/data/com.termux/files/usr/tmp}/media_pipeline.lock"
+else
+    SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
+    LOCKFILE="${TMPDIR:-/tmp}/media_pipeline.lock"
+fi
+
 readonly LOG="$SD/Documents/.media_processor.log"
-readonly LOCKFILE="${TMPDIR:-/data/data/com.termux/files/usr/tmp}/media_pipeline.lock"
 readonly LOG_MAX=$(( 2 * 1024 * 1024 ))
 
 log() {
@@ -25,21 +33,33 @@ trim_log() {
 }
 
 # ── 1. Acquire Single-Instance Lock ───────────────────────────────────
-exec 9>"$LOCKFILE"
-if ! flock -n 9 2>/dev/null; then
-    echo "Another instance of master_run is already active." >&2
-    exit 0
+mkdir -p "$(dirname "$LOCKFILE")"
+
+if command -v flock &>/dev/null; then
+    exec 9>"$LOCKFILE"
+    if ! flock -n 9 2>/dev/null; then
+        echo "Another instance of master_run is already active." >&2
+        exit 0
+    fi
+else
+    # Portable fallback lock (atomic directory lock) for macOS / Git Bash
+    LOCKDIR="${LOCKFILE}.dir"
+    if ! mkdir "$LOCKDIR" 2>/dev/null; then
+        echo "Another instance of master_run is already active." >&2
+        exit 0
+    fi
+    trap 'rm -rf "$LOCKDIR"' EXIT INT TERM HUP
 fi
 
 # ── 2. Environment & Log Initialization ───────────────────────────────
-mkdir -p "$(dirname "$LOG")"
+mkdir -p "$SD/Documents"
 : >> "$LOG"
 trim_log
 log "════════════ Session Start ════════════"
 
 for bin in ffmpeg ffprobe awk; do
     command -v "$bin" &>/dev/null || {
-        printf 'FATAL: "%s" is not installed. Run: pkg install ffmpeg\n' "$bin" >&2
+        printf 'FATAL: "%s" is not installed.\n' "$bin" >&2
         log "FATAL: $bin not found in PATH"
         exit 1
     }
@@ -48,9 +68,9 @@ done
 # ── 3. Silent Dependency Update ───────────────────────────────────────
 log "Updating yt-dlp..."
 if command -v yt-dlp &>/dev/null; then
-    { yt-dlp -U 2>&1 || pip install --upgrade yt-dlp 2>&1 || true; } >> "$LOG"
+    { yt-dlp -U 2>&1 || pip install --upgrade yt-dlp 2>&1 || python3 -m pip install --upgrade yt-dlp 2>&1 || python -m pip install --upgrade yt-dlp 2>&1 || true; } >> "$LOG"
 else
-    { pip install yt-dlp 2>&1 || true; } >> "$LOG"
+    { pip install yt-dlp 2>&1 || python3 -m pip install yt-dlp 2>&1 || python -m pip install yt-dlp 2>&1 || true; } >> "$LOG"
 fi
 log "yt-dlp update routine finished."
 

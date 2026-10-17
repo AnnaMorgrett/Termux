@@ -1,12 +1,18 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════
 #  normalize.sh — Video sanitizer, linear audio normalizer (-12 LUFS),
 #                 integrity verifier, & media sync
-#  Target Location: /storage/emulated/0/Termux/normalize.sh
+#  Supports: Android (Termux) & PC (Linux / macOS / Windows Git Bash)
 # ═══════════════════════════════════════════════════════════════════════
 set -u
 
-readonly SD="/storage/emulated/0"
+# Auto-detect Environment
+if [ -d "/data/data/com.termux" ] || [ -n "${TERMUX_VERSION:-}" ]; then
+    SD="${MEDIA_DIR:-/storage/emulated/0}"
+else
+    SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
+fi
+
 readonly INPUT_DIRS=(
     "$SD/DCIM/TikTok"
     "$SD/Download/yt-dlp"
@@ -23,10 +29,12 @@ log() {
 
 media_scan() {
     local target="$1"
-    termux-media-scan "$target" 2>/dev/null \
-        || am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
-               -d "file://$target" >/dev/null 2>&1 \
-        || true
+    if command -v termux-media-scan &>/dev/null; then
+        termux-media-scan "$target" 2>/dev/null || true
+    elif command -v am &>/dev/null; then
+        am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
+               -d "file://$target" >/dev/null 2>&1 || true
+    fi
 }
 
 sanitize_name() {

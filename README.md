@@ -1,40 +1,45 @@
-# Termux Media Processing Pipeline
+# Termux & PC Media Processing Pipeline
 
-A modular, automated media ingest and audio normalization pipeline for Android devices running Termux. It handles silent dependency updates, moves and catalogs non-video assets, and performs two-pass linear audio loudness normalization to **-12 LUFS** (strictly zero dynamic range compression) before cataloging finalized media directly into Android's native MediaStore (Gallery / WhatsApp picker).
+A modular, automated media ingest and audio normalization pipeline built for **Android (Termux)** and **PC (Linux / macOS / Windows Git Bash)**.
+
+It automatically moves non-video assets to an asset library, updates dependencies silently, and performs two-pass linear audio loudness normalization to **-12 LUFS** (strictly zero dynamic range compression), followed by automated media indexing.
 
 ---
 
-## ⚡ 1-Click Automated Installation
+## ⚡ Quick Start & Installation
 
+### Option A: On Mobile (Android Termux)
 Paste this single command into a fresh Termux terminal:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AnnaMorgrett/Termux/main/install.sh | bash
 ```
 
-### What the installer does:
-1. Requests Android storage permissions (`termux-setup-storage`) and waits until access is granted.
-2. Updates package repositories and installs required tools: `git`, `ffmpeg`, `python`, `python-pip`, and `yt-dlp`.
-3. Clones this repository into `/storage/emulated/0/Termux/` (or pulls the latest changes if already present).
-4. Registers global shortcuts in `$PREFIX/bin/`:
-   - `dl`: Downloads any video/audio stream and triggers the normalization pipeline.
-   - `tiktok`: Directly triggers the normalization pipeline over existing media.
-5. Applies executable permissions (`chmod +x`) to all scripts and commands.
+### Option B: On PC (Linux / macOS / Windows Git Bash)
+Clone the repository and run the installer:
+
+```bash
+git clone https://github.com/AnnaMorgrett/Termux.git
+cd Termux
+bash install.sh
+```
 
 ---
 
-## 🚀 Usage
+## 🚀 Unified Commands (Same on Both Mobile & PC)
 
-### 1. Download & Process (`dl`)
-Download media from any site supported by `yt-dlp` directly into the ingestion folder and immediately process it:
+Both platforms use the identical command names and options:
+
+### 1. Download & Normalize (`dl`)
+Downloads media via `yt-dlp` into the download queue and immediately triggers loudness normalization:
 
 ```bash
 dl "https://www.tiktok.com/@username/video/1234567890"
 ```
-*Extra `yt-dlp` arguments can be passed through directly (e.g. `dl "https://..." -f bestvideo+bestaudio`).*
+*(Any additional flags are passed directly to `yt-dlp`, e.g. `dl "https://..." -f bestvideo+bestaudio`)*
 
-### 2. Batch Process Existing Media (`tiktok`)
-Scan input directories, relocate non-video assets, and normalize all pending videos:
+### 2. Batch Process Media (`tiktok`)
+Scans the input folders, relocates image/gif assets, and normalizes all pending videos:
 
 ```bash
 tiktok
@@ -44,29 +49,32 @@ tiktok
 
 ## 📁 Storage & Folder Architecture
 
-| Path | Purpose |
-| :--- | :--- |
-| `/storage/emulated/0/DCIM/TikTok` | Primary video/asset input directory |
-| `/storage/emulated/0/Download/yt-dlp` | Ingestion folder for `dl` command downloads |
-| `/storage/emulated/0/Pictures/TikTok_Assets` | Relocation folder for non-video assets (`.jpg`, `.png`, `.gif`, `.webp`, `.heic`, etc.) |
-| `/storage/emulated/0/Movies/NormalizedVideo` | Output destination for verified, loudness-normalized videos |
-| `/storage/emulated/0/Documents/.media_processor.log` | Central debug log with automated size trimming (2MB max) |
+The scripts auto-detect whether they are running on Android or a PC:
+
+| Location | Mobile (Termux) | PC (Linux / macOS / Git Bash) |
+| :--- | :--- | :--- |
+| **Scripts Root** | `/storage/emulated/0/Termux/` | Your cloned `Termux/` repository directory |
+| **Global Shortcuts** | `$PREFIX/bin/` (`dl`, `tiktok`) | `~/.local/bin/` or `$PREFIX/bin/` |
+| **TikTok Input** | `/storage/emulated/0/DCIM/TikTok/` | `~/TermuxMedia/DCIM/TikTok/` |
+| **yt-dlp Input** | `/storage/emulated/0/Download/yt-dlp/` | `~/TermuxMedia/Download/yt-dlp/` |
+| **Assets Output** | `/storage/emulated/0/Pictures/TikTok_Assets/` | `~/TermuxMedia/Pictures/TikTok_Assets/` |
+| **Normalized Output** | `/storage/emulated/0/Movies/NormalizedVideo/` | `~/TermuxMedia/Movies/NormalizedVideo/` |
+| **Debug Log** | `/storage/emulated/0/Documents/.media_processor.log` | `~/TermuxMedia/Documents/.media_processor.log` |
+
+> *Tip for PC testing:* You can override the root media storage folder anytime by exporting `export MEDIA_DIR="/path/to/custom/folder"`.
 
 ---
 
-## ⚙️ Modular Pipeline Components
+## ⚙️ Modular Architecture
 
-All components reside in `/storage/emulated/0/Termux/`:
-
-- **[`download.sh`](download.sh)**: Dedicated `yt-dlp` execution wrapper targeting `/storage/emulated/0/Download/yt-dlp`.
-- **[`move_assets.sh`](move_assets.sh)**: Scans input folders for image and sticker assets, safely relocates them with collision resolution, and triggers Android's `MediaScanner`.
+- **[`download.sh`](download.sh)**: Dedicated `yt-dlp` download logic with sane output naming and timestamp flags.
+- **[`move_assets.sh`](move_assets.sh)**: Scans for non-video assets (`.jpg`, `.png`, `.gif`, `.webp`, `.heic`, `.svg`), relocates them safely without overwriting, and triggers Android's `MediaScanner` (or skips gracefully on PC).
 - **[`normalize.sh`](normalize.sh)**:
-  - Sanitizes filenames strictly to `[A-Za-z0-9_-]`.
-  - Probes video codec: preserves bitstream (`-c:v copy`) for H.264/HEVC/MPEG-4; re-encodes incompatible formats to high-quality H.264.
-  - **Two-Pass Audio Normalization**:
-    - **Pass 1**: Analyzes integrated loudness via FFmpeg `loudnorm` filter output.
-    - **Pass 2**: Applies exact constant linear volume gain (`volume=${gain}dB`) to target **-12 LUFS**. Eliminates pumping and dynamic compression artifacts.
-  - Generates web-optimized MP4s (`+faststart`).
-  - Verifies container duration and file integrity with `ffprobe` prior to deleting the source file.
-  - Broadcasts media updates immediately so videos appear instantly in Android Gallery and social app pickers.
-- **[`master_run.sh`](master_run.sh)**: Orchestration controller that handles concurrency locks (`flock`), debug log rotation, silent `yt-dlp` dependency updates, and sequential execution of asset relocation and video normalization.
+  - Sanitizes output filenames strictly to `[A-Za-z0-9_-]`.
+  - Stream-copies compatible video codecs (`h264`, `hevc`, `mpeg4`) or encodes with `libx264`.
+  - **Pass 1**: Accurately measures integrated loudness (LUFS) with FFmpeg `loudnorm`.
+  - **Pass 2**: Applies pure linear gain (`volume=${gain}dB`) to reach **-12 LUFS** without dynamic compression.
+  - Generates web-optimized MP4s with `+faststart`.
+  - Verifies container duration and file size before safely deleting source files.
+- **[`master_run.sh`](master_run.sh)**: Orchestration controller managing single-instance lockfiles (`flock`), rotating debug logs (2MB cap), silent `yt-dlp` updates, and sequential execution.
+- **[`install.sh`](install.sh)**: Cross-platform 1-click setup script for Android Termux and PC development environments.
