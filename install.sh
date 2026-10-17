@@ -14,7 +14,7 @@ echo "=================================================="
 
 # ── 1. Android Storage Permissions ────────────────────────────────────
 echo "[1/5] Requesting Android storage permissions..."
-termux-setup-storage
+if [ ! -d ~/storage ]; then termux-setup-storage; sleep 4; fi
 
 # Block until storage permission is granted and /storage/emulated/0 is writable
 while [ ! -d "/storage/emulated/0" ] || [ ! -w "/storage/emulated/0" ]; do
