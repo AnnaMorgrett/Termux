@@ -72,6 +72,7 @@ for dir in "${INPUT_DIRS[@]}"; do
         tmp_path="${target_path%.mp4}.tmp.mp4"
         CURRENT_TMP="$tmp_path"
 
+        echo "[*] Processing: $orig_name"
         log "Processing video: $orig_name"
 
         # ── Probe video stream codec ─────────────────────────────────
@@ -80,6 +81,7 @@ for dir in "${INPUT_DIRS[@]}"; do
                     "$src" 2>/dev/null | head -1)
 
         if [[ -z "$vcodec" ]]; then
+            echo "  [SKIP] No video stream detected"
             log "  SKIPPED: No video stream detected in $orig_name"
             (( ++count_skip )) || true
             CURRENT_TMP=""
@@ -97,10 +99,12 @@ for dir in "${INPUT_DIRS[@]}"; do
                     "$src" 2>/dev/null | head -1)
 
         if [[ -z "$acodec" ]]; then
+            echo "  [Audio] No audio stream; remuxing video"
             log "  No audio stream detected; remuxing video only"
             if ! ffmpeg -hide_banner -nostats -y \
                     -i "$src" -map 0:v:0 "${vcodec_args[@]}" \
                     -movflags +faststart -an "$tmp_path" 2>>"$LOG"; then
+                echo "  [ERROR] Remux failed"
                 log "  ERROR: Remux failed for $orig_name"
                 rm -f "$tmp_path"
                 (( ++count_fail )) || true
@@ -121,6 +125,7 @@ for dir in "${INPUT_DIRS[@]}"; do
             else
                 linear_gain=$(awk "BEGIN {printf \"%.2f\", (${TARGET_LUFS}) - (${lufs_val})}")
             fi
+            echo "  [Audio] Measured: ${lufs_val:-N/A} LUFS -> Gain: ${linear_gain} dB (Target: ${TARGET_LUFS} LUFS)"
             log "  LUFS: ${lufs_val:-N/A} -> Applying Constant Linear Gain: ${linear_gain} dB"
 
             # Pass 2: Apply constant linear volume gain (Zero DRC)
@@ -129,6 +134,7 @@ for dir in "${INPUT_DIRS[@]}"; do
                     "${vcodec_args[@]}" \
                     -af "volume=${linear_gain}dB" -c:a aac -b:a 192k \
                     -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                echo "  [ERROR] Normalization render failed"
                 log "  ERROR: Audio gain render failed for $orig_name"
                 rm -f "$tmp_path"
                 (( ++count_fail )) || true
@@ -146,10 +152,12 @@ for dir in "${INPUT_DIRS[@]}"; do
             mv -f "$tmp_path" "$target_path"
             rm -f "$src"
             media_scan "$target_path"
+            echo "  [✓] Verified & Saved: $(basename "$target_path")"
             log "  SUCCESS: $orig_name -> $(basename "$target_path") [${out_size} bytes]"
             (( ++count_ok )) || true
         else
             rm -f "$tmp_path"
+            echo "  [ERROR] Verification check failed. Original preserved."
             log "  ERROR: Verification failed for $orig_name. Source preserved."
             (( ++count_fail )) || true
         fi
@@ -163,4 +171,4 @@ for dir in "${INPUT_DIRS[@]}"; do
 done
 
 log "Video processing completed. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip"
-printf 'Videos: OK=%d  Fail=%d  Skip=%d\n' "$count_ok" "$count_fail" "$count_skip"
+printf 'Summary: Videos OK=%d, Fail=%d, Skipped=%d\n' "$count_ok" "$count_fail" "$count_skip"
