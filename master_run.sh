@@ -125,6 +125,39 @@ fi
 log "yt-dlp update routine finished."
 printf "${C_GREEN}[✓] yt-dlp is up to date.${C_RESET}\n"
 
+# ── Shared media-scan queue (scripts queue paths, scanned once at the end) ───
+export MEDIA_SCAN_QUEUE="$(mktemp)"
+scan_queue() {
+    # Scan every queued file in ONE call (deduped, existing files only).
+    local qf="$1" f out rc=1 i
+    local -a files=() chunk=()
+    [[ -s "$qf" ]] || return 0
+    while IFS= read -r f; do
+        [[ -f "$f" ]] && files+=("$f")
+    done < <(sort -u "$qf")
+    (( ${#files[@]} > 0 )) || return 0
+    if command -v termux-media-scan &>/dev/null; then
+        rc=0
+        for (( i=0; i<${#files[@]}; i+=50 )); do
+            chunk=("${files[@]:i:50}")
+            out=$(termux-media-scan "${chunk[@]}" </dev/null 2>&1) || rc=$?
+        done
+    elif command -v am &>/dev/null; then
+        rc=0
+        for f in "${files[@]}"; do
+            am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
+               -d "file://$f" </dev/null >/dev/null 2>&1 || rc=$?
+        done
+    else
+        out="no termux-media-scan or am found"
+    fi
+    if (( rc == 0 )); then
+        printf "${C_GREEN}[✓] Media scan:${C_RESET} %d file(s) added to gallery\n" "${#files[@]}"
+    else
+        printf "${C_YELLOW}[!] Media scan failed (install Termux:API app + 'pkg install termux-api'): %s${C_RESET}\n" "${out:-}" >&2
+    fi
+}
+
 # ── 4. Asset Relocation Stage ─────────────────────────────────────────────────
 printf "${C_BLUE}[2/3] Invoking asset relocation module...${C_RESET}\n"
 if [[ -f "$SCRIPTS_DIR/move_assets.sh" ]]; then
@@ -144,6 +177,9 @@ else
     printf "${C_YELLOW}[!] Warning: %s/normalize.sh not found.${C_RESET}\n" "$SCRIPTS_DIR"
     log "WARNING: normalize.sh not found"
 fi
+
+scan_queue "$MEDIA_SCAN_QUEUE"
+rm -f "$MEDIA_SCAN_QUEUE"
 
 trim_log
 log "════════════ Session Finished ════════════"
