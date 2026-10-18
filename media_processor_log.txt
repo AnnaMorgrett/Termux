@@ -5075,3 +5075,332 @@ frame=  386 fps=0.0 q=-1.0 Lsize=    2056KiB time=00:00:12.83 bitrate=1312.1kbit
 [2026-10-18 10:24:52] [NORMALIZE]   SUCCESS: mglvphh_2026-10-17_7697344865327172871.mp4 -> mglvphh_2026-10-17_7697344865327172871.mp4 [2105822 bytes]
 [2026-10-18 10:24:52] [NORMALIZE] Video normalization finished. Success: 4, Fail: 0, Skipped: 1, Unsupported: 2
 [2026-10-18 10:24:52] [MASTER] ════════════ Session Finished ════════════
+[2026-10-18 10:40:49] [MASTER] ════════════ Session Start ════════════
+[2026-10-18 10:40:49] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-18 10:40:50] [MASTER] yt-dlp update routine finished.
+[2026-10-18 10:40:50] [MASTER] Invoking move_assets.sh...
+[2026-10-18 10:40:50] [ASSETS] Beginning non-video asset scan...
+[2026-10-18 10:40:50] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-18 10:40:50] [MASTER] Invoking normalize.sh...
+[2026-10-18 10:40:50] [NORMALIZE] Beginning video normalization stage...
+[2026-10-18 10:40:50] [NORMALIZE] Processing video: maiwwrrr16_2026-10-17_7697597218001292566.mp4
+[2026-10-18 10:40:51] [NORMALIZE]   UNSUPPORTED: maiwwrrr16_2026-10-17_7697597218001292566.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:51] [NORMALIZE] Processing video: _ecsb__2026-10-18_7697566960111848737.mp4
+[2026-10-18 10:40:51] [NORMALIZE]   UNSUPPORTED: _ecsb__2026-10-18_7697566960111848737.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:51] [NORMALIZE] Processing video: barbrush1_2026-09-24_7688801492072975638.mp4
+[2026-10-18 10:40:51] [NORMALIZE]   UNSUPPORTED: barbrush1_2026-09-24_7688801492072975638.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:51] [NORMALIZE] Processing video: kentxn_2026-10-17_7697671741228895509.mp4
+[2026-10-18 10:40:52] [NORMALIZE]   LUFS: -32.66 -> Applying Constant Linear Gain: 20.66 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/kentxn_2026-10-17_7697671741228895509.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v1c044g50000db9punfog65hphdvsuh0
+    vid_md5         : fdcb8fef672cd5c0c396971d103750f9
+    encoder         : Lavf58.76.100
+  Duration: 00:00:10.24, start: 0.000000, bitrate: 259 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 65 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x720, 186 kb/s, SAR 1:1 DAR 1:1, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/kentxn_2026-10-17_7697671741228895509.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v1c044g50000db9punfog65hphdvsuh0
+    vid_md5         : fdcb8fef672cd5c0c396971d103750f9
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x720 [SAR 1:1 DAR 1:1], q=2-31, 186 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007a59c51270] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb4000079b9c45510] video:233KiB audio:245KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.603844%
+frame=  307 fps=0.0 q=-1.0 Lsize=     490KiB time=00:00:10.24 bitrate= 392.2kbits/s speed=38.3x elapsed=0:00:00.26    
+[aac @ 0xb400007969c4c5a0] Qavg: 502.056
+[2026-10-18 10:40:53] [NORMALIZE]   SUCCESS: kentxn_2026-10-17_7697671741228895509.mp4 -> kentxn_2026-10-17_7697671741228895509.mp4 [502056 bytes]
+[2026-10-18 10:40:53] [NORMALIZE] Processing video: axrxiii_2026-08-20_7676116379283492118.mp4
+[2026-10-18 10:40:53] [NORMALIZE]   UNSUPPORTED: axrxiii_2026-08-20_7676116379283492118.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:53] [NORMALIZE] Processing video: skydssth_nder_2026-10-16_7697299153218456854.mp4
+[2026-10-18 10:40:53] [NORMALIZE]   UNSUPPORTED: skydssth_nder_2026-10-16_7697299153218456854.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:53] [NORMALIZE] Processing video: lazy_dude123_2026-10-17_7697523471034748176.mp4
+[2026-10-18 10:40:55] [NORMALIZE]   LUFS: -18.48 -> Applying Constant Linear Gain: 6.48 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/lazy_dude123_2026-10-17_7697523471034748176.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db9hevnog65rk7adhkdg
+    vid_md5         : c4406cd2eb052668688da894eacd74b4
+    encoder         : Lavf58.76.100
+  Duration: 00:00:28.03, start: 0.000000, bitrate: 585 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 64 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x1280, 513 kb/s, SAR 1:1 DAR 9:16, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/lazy_dude123_2026-10-17_7697523471034748176.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db9hevnog65rk7adhkdg
+    vid_md5         : c4406cd2eb052668688da894eacd74b4
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x1280 [SAR 1:1 DAR 9:16], q=2-31, 513 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb40000785d511530] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000774d511270] video:1757KiB audio:660KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.295513%
+frame=  841 fps=0.0 q=-1.0 Lsize=    2448KiB time=00:00:28.00 bitrate= 716.3kbits/s speed=47.1x elapsed=0:00:00.59    
+[aac @ 0xb4000077bd50a340] Qavg: 634.839
+[2026-10-18 10:40:56] [NORMALIZE]   SUCCESS: lazy_dude123_2026-10-17_7697523471034748176.mp4 -> lazy_dude123_2026-10-17_7697523471034748176.mp4 [2507147 bytes]
+[2026-10-18 10:40:56] [NORMALIZE] Processing video: shotoxyz0_2026-10-17_7697376453125491975.mp4
+[2026-10-18 10:40:57] [NORMALIZE]   LUFS: -17.09 -> Applying Constant Linear Gain: 5.09 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/shotoxyz0_2026-10-17_7697376453125491975.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db9965vog65mr74ciosg
+    vid_md5         : 9377beafa1b5e2654af5d1926fedbfc2
+    encoder         : Lavf58.76.100
+  Duration: 00:00:13.87, start: 0.000000, bitrate: 685 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 79 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x720, 598 kb/s, SAR 1:1 DAR 1:1, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/shotoxyz0_2026-10-17_7697376453125491975.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db9965vog65mr74ciosg
+    vid_md5         : 9377beafa1b5e2654af5d1926fedbfc2
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x720 [SAR 1:1 DAR 1:1], q=2-31, 598 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb40000741c46eb10] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000751c469690] video:1013KiB audio:332KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.210999%
+frame=  416 fps=0.0 q=-1.0 Lsize=    1361KiB time=00:00:13.83 bitrate= 805.7kbits/s speed=36.8x elapsed=0:00:00.37    
+[aac @ 0xb4000075fc465150] Qavg: 500.183
+[2026-10-18 10:40:58] [NORMALIZE]   SUCCESS: shotoxyz0_2026-10-17_7697376453125491975.mp4 -> shotoxyz0_2026-10-17_7697376453125491975.mp4 [1393721 bytes]
+[2026-10-18 10:40:58] [NORMALIZE] Processing video: le0mn4_2026-10-17_7697333448087719190.mp4
+[2026-10-18 10:40:58] [NORMALIZE]   UNSUPPORTED: le0mn4_2026-10-17_7697333448087719190.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:40:58] [NORMALIZE] Processing video: froghopper69_2026-10-16_7697206726608702733.mp4
+[2026-10-18 10:41:01] [NORMALIZE]   LUFS: -19.21 -> Applying Constant Linear Gain: 7.21 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/froghopper69_2026-10-16_7697206726608702733.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000db8vflfog65r73dlu320
+    vid_md5         : 7849058d43775ec202f6add9cbfb5173
+    encoder         : Lavf58.76.100
+  Duration: 00:01:07.57, start: 0.000000, bitrate: 304 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 64 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], 233 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/froghopper69_2026-10-16_7697206726608702733.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000db8vflfog65r73dlu320
+    vid_md5         : 7849058d43775ec202f6add9cbfb5173
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], q=2-31, 233 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400006f38a5ba50] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400006fa8a5b970] video:1926KiB audio:1598KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.065778%
+frame= 2027 fps=1307 q=-1.0 Lsize=    3596KiB time=00:01:07.54 bitrate= 436.2kbits/s speed=43.6x elapsed=0:00:01.55    
+[aac @ 0xb400006ff8a61f80] Qavg: 626.563
+[2026-10-18 10:41:03] [NORMALIZE]   SUCCESS: froghopper69_2026-10-16_7697206726608702733.mp4 -> froghopper69_2026-10-16_7697206726608702733.mp4 [3682669 bytes]
+[2026-10-18 10:41:03] [NORMALIZE] Processing video: linuxuser1510_2026-10-16_7697291257374084384.mp4
+[2026-10-18 10:41:03] [NORMALIZE]   UNSUPPORTED: linuxuser1510_2026-10-16_7697291257374084384.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:03] [NORMALIZE] Processing video: lewis_norcross2005_2026-10-16_7697280510833331478.mp4
+[2026-10-18 10:41:03] [NORMALIZE]   UNSUPPORTED: lewis_norcross2005_2026-10-16_7697280510833331478.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:04] [NORMALIZE] Processing video: baiba7606_2026-10-17_7697427879256132886.mp4
+[2026-10-18 10:41:04] [NORMALIZE]   UNSUPPORTED: baiba7606_2026-10-17_7697427879256132886.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:04] [NORMALIZE] Processing video: slimmyfn_2026-10-17_7697647590866734352.mp4
+[2026-10-18 10:41:04] [NORMALIZE]   UNSUPPORTED: slimmyfn_2026-10-17_7697647590866734352.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:04] [NORMALIZE] Processing video: franciscarl333_2026-10-09_7694703316302941472.mp4
+[2026-10-18 10:41:04] [NORMALIZE]   UNSUPPORTED: franciscarl333_2026-10-09_7694703316302941472.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:04] [NORMALIZE] Processing video: wendybestaburger_2026-10-17_7697536451549941014.mp4
+[2026-10-18 10:41:05] [NORMALIZE]   UNSUPPORTED: wendybestaburger_2026-10-17_7697536451549941014.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:05] [NORMALIZE] Processing video: koldun.kolyan_2026-10-15_7696746195049385234.mp4
+[2026-10-18 10:41:06] [NORMALIZE]   LUFS: -21.72 -> Applying Constant Linear Gain: 9.72 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/koldun.kolyan_2026-10-15_7696746195049385234.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v1c044g50000db85bgnog65qhhukp1h0
+    vid_md5         : a33ba5e5f8bde7299050b4d8c67daf00
+    encoder         : Lavf58.76.100
+  Duration: 00:00:09.78, start: 0.000000, bitrate: 169 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 65 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x1560, 96 kb/s, SAR 1:1 DAR 6:13, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/koldun_kolyan_2026-10-15_7696746195049385234.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v1c044g50000db85bgnog65qhhukp1h0
+    vid_md5         : a33ba5e5f8bde7299050b4d8c67daf00
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: hevc (Main) (hvc1 / 0x31637668), yuv420p(tv, bt709), 720x1560 [SAR 1:1 DAR 6:13], q=2-31, 96 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000072fa027730] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb4000073ea02b5b0] video:115KiB audio:234KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 3.433357%
+frame=  293 fps=0.0 q=-1.0 Lsize=     360KiB time=00:00:09.77 bitrate= 302.1kbits/s speed=34.9x elapsed=0:00:00.27    
+[aac @ 0xb40000735a021be0] Qavg: 536.427
+[2026-10-18 10:41:06] [NORMALIZE]   SUCCESS: koldun.kolyan_2026-10-15_7696746195049385234.mp4 -> koldun_kolyan_2026-10-15_7696746195049385234.mp4 [369134 bytes]
+[2026-10-18 10:41:06] [NORMALIZE] Processing video: maxi_es_god_2026-10-14_7696516759666429202.mp4
+[2026-10-18 10:41:07] [NORMALIZE]   UNSUPPORTED: maxi_es_god_2026-10-14_7696516759666429202.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:07] [NORMALIZE] Processing video: zum1xx__2026-10-16_7697056678960696589.mp4
+[2026-10-18 10:41:08] [NORMALIZE]   LUFS: -16.69 -> Applying Constant Linear Gain: 4.69 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/zum1xx__2026-10-16_7697056678960696589.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000db8mug7og65m3nkbqjo0
+    vid_md5         : f3759dc52c4f254507ad4db08418775a
+    encoder         : Lavf58.76.100
+  Duration: 00:00:10.17, start: 0.000000, bitrate: 1832 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 65 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1614 [SAR 1:1 DAR 120:269], 1760 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/zum1xx_2026-10-16_7697056678960696589.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000db8mug7og65m3nkbqjo0
+    vid_md5         : f3759dc52c4f254507ad4db08418775a
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1614 [SAR 1:1 DAR 120:269], q=2-31, 1760 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb40000782ff4a0f0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000783ff42430] video:2184KiB audio:238KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.496439%
+frame=  305 fps=0.0 q=-1.0 Lsize=    2434KiB time=00:00:10.12 bitrate=1969.8kbits/s speed=33.8x elapsed=0:00:00.29    
+[aac @ 0xb4000076eff449f0] Qavg: 431.079
+[2026-10-18 10:41:09] [NORMALIZE]   SUCCESS: zum1xx__2026-10-16_7697056678960696589.mp4 -> zum1xx_2026-10-16_7697056678960696589.mp4 [2492781 bytes]
+[2026-10-18 10:41:09] [NORMALIZE] Processing video: _ace_ace_ace_ace_ace__2026-10-18_7697730277094870294.mp4
+[2026-10-18 10:41:09] [NORMALIZE]   UNSUPPORTED: _ace_ace_ace_ace_ace__2026-10-18_7697730277094870294.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:41:09] [NORMALIZE] Processing video: Warga sipil mbak 🤦‍♂️ ｜ Ketawa Tujuh.mp4
+[2026-10-18 10:41:10] [NORMALIZE]   LUFS: -14.10 -> Applying Constant Linear Gain: 2.10 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/Download/yt-dlp/Warga sipil mbak 🤦‍♂️ ｜ Ketawa Tujuh.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+  Duration: 00:00:13.72, start: 0.000000, bitrate: 2329 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1280x720 [SAR 1:1 DAR 16:9], 2277 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 64 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/Warga_sipil_mbak_Ketawa_Tujuh.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 2277 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000078f1991590] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb4000077f198e5b0] video:3781KiB audio:322KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.390410%
+frame=  408 fps=0.0 q=-1.0 Lsize=    4118KiB time=00:00:13.61 bitrate=2478.7kbits/s speed=44.8x elapsed=0:00:00.30    
+[aac @ 0xb4000079c198d6e0] Qavg: 446.811
+[2026-10-18 10:41:11] [NORMALIZE]   SUCCESS: Warga sipil mbak 🤦‍♂️ ｜ Ketawa Tujuh.mp4 -> Warga_sipil_mbak_Ketawa_Tujuh.mp4 [4217109 bytes]
+[2026-10-18 10:41:11] [NORMALIZE] Video normalization finished. Success: 7, Fail: 0, Skipped: 0, Unsupported: 16
+[2026-10-18 10:41:11] [MASTER] ════════════ Session Finished ════════════
