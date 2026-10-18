@@ -88,10 +88,10 @@ log() {
 media_scan() {
     local target="$1"
     if command -v termux-media-scan &>/dev/null; then
-        termux-media-scan "$target" 2>/dev/null || true
+        termux-media-scan "$target" </dev/null >/dev/null 2>&1 || true
     elif command -v am &>/dev/null; then
         am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
-               -d "file://$target" >/dev/null 2>&1 || true
+               -d "file://$target" </dev/null >/dev/null 2>&1 || true
     fi
 }
 
@@ -127,7 +127,7 @@ count_unsup=0
 
 for dir in "${INPUT_DIRS[@]}"; do
     [[ -d "$dir" ]] || continue
-    while IFS= read -r -d '' src; do
+    while IFS= read -r -d '' src <&3; do
         orig_name=$(basename "$src")
         if [[ -f "$UNSUPPORTED_LIST" ]] \
            && grep -qxF "$(printf '%s\t%s' "$orig_name" "$(wc -c < "$src")")" "$UNSUPPORTED_LIST"; then
@@ -270,7 +270,7 @@ for dir in "${INPUT_DIRS[@]}"; do
         fi
 
         CURRENT_TMP=""
-    done < <(find "$dir" -maxdepth 1 -type f \( \
+    done 3< <(find "$dir" -maxdepth 1 -type f \( \
                  -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.webm' \
               -o -iname '*.mov' -o -iname '*.avi' -o -iname '*.3gp'  \
               -o -iname '*.ts'  -o -iname '*.flv' -o -iname '*.m4v'  \
