@@ -5,7 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.2.0
+#  @version     2.3.0
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -118,6 +118,39 @@ scan_queue() {
     fi
 }
 
+redownload_h264() {
+    # ByteVC2 can't be decoded/played by ffmpeg, WhatsApp or most players.
+    # Re-fetch the same TikTok video as H.264 via yt-dlp (user + id come from
+    # the filename). The bvc2 original is deleted ONLY after the new file is
+    # verified (h264/hevc codec + full decode with zero errors).
+    local stem="$1" src="$2" id user url tmpd out vc ferr
+    id="${stem##*_}"
+    user="${stem%_*_*}"
+    [[ "$id" =~ ^[0-9]{15,}$ && -n "$user" ]] || return 1
+    command -v yt-dlp &>/dev/null || return 1
+    url="https://www.tiktok.com/@${user}/video/${id}"
+    tmpd=$(mktemp -d "$SD/Download/.redl.XXXXXX") || return 1
+    printf "  ${C_BLUE}[~] Re-downloading as H.264:${C_RESET} %s\n" "$url"
+    log "  REDOWNLOAD: $url"
+    yt-dlp --no-mtime -S "vcodec:h264,res,acodec:m4a" \
+           -o "$tmpd/%(id)s.%(ext)s" "$url" </dev/null >> "$LOG" 2>&1
+    out=$(find "$tmpd" -maxdepth 1 -type f -name '*.mp4' | head -1)
+    if [[ -z "$out" ]]; then
+        rm -rf "$tmpd"; return 1
+    fi
+    vc=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+            -of csv=p=0 "$out" </dev/null 2>/dev/null | head -1)
+    ferr=$(ffmpeg -v error -nostdin -i "$out" -f null - </dev/null 2>&1 | head -3)
+    if [[ "$vc" =~ ^(h264|hevc)$ && -z "$ferr" ]]; then
+        mv -f "$out" "$(dirname "$src")/${stem}_h264.mp4" && rm -f "$src"
+        rm -rf "$tmpd"
+        log "  REDOWNLOAD OK ($vc): $stem -> ${stem}_h264.mp4; bvc2 original removed"
+        return 0
+    fi
+    log "  REDOWNLOAD REJECTED (codec=${vc:-?} err=${ferr:-none}) for $stem"
+    rm -rf "$tmpd"; return 1
+}
+
 sanitize_name() {
     local raw_base="${1%.*}"
     local clean
@@ -141,12 +174,13 @@ trap '[[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"; log 
 # ── Execution ─────────────────────────────────────────────────────────────────
 mkdir -p "$VIDEO_OUT" "$(dirname "$LOG")"
 log "Beginning video normalization stage..."
-printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.2.0)${C_RESET}\n"
+printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.3.0)${C_RESET}\n"
 
 count_ok=0
 count_fail=0
 count_skip=0
 count_bvc2=0
+count_unsup=0
 
 for dir in "${INPUT_DIRS[@]}"; do
     [[ -d "$dir" ]] || continue
@@ -179,24 +213,29 @@ for dir in "${INPUT_DIRS[@]}"; do
             continue
         fi
 
-        # ByteVC2 (bvc2): ffmpeg can't decode it, but the stream can be copied
-        # untouched into a MOV-muxed (isom brand) file while only the audio is
-        # normalized. Video bytes stay identical; verified by MD5 below.
         bvc2_mode=0
         mux_args=(-movflags +faststart)
         if [[ -z "$vcodec" || "$vcodec" == "none" || "$vcodec" == "unknown" \
               || "$vtag" == bvc* ]]; then
-            bvc2_mode=1
-            vcodec_args=(-c:v copy -tag:v "${vtag:-bvc2}")
-            mux_args=(-movflags +faststart -f mov -brand isom)
-            printf "  ${C_YELLOW}[bvc2] ByteVC2 video: copying video untouched, normalizing audio only.${C_RESET}\n"
-            log "  BVC2 passthrough: $orig_name codec=${vcodec:-?} tag=${vtag:-?}"
-        else
-            case "$vcodec" in
-                h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
-                *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
-            esac
+            if [[ -n "${NORMALIZE_PASS2:-}" ]]; then   # 2nd pass: no repeat downloads
+                (( ++count_unsup )) || true; CURRENT_TMP=""; continue
+            fi
+            printf "  ${C_YELLOW}[bvc2] ByteVC2 video - not playable by most players.${C_RESET}\n"
+            if redownload_h264 "${orig_name%.*}" "$src"; then
+                printf "  ${C_GREEN}[✓] Replaced with verified H.264 copy (normalized in the pass below).${C_RESET}\n"
+                (( ++count_bvc2 )) || true
+            else
+                printf "  ${C_YELLOW}[!] Could not get an H.264 copy. Original kept untouched.${C_RESET}\n"
+                log "  BVC2 kept: $orig_name"
+                (( ++count_unsup )) || true
+            fi
+            CURRENT_TMP=""
+            continue
         fi
+        case "$vcodec" in
+            h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
+            *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
+        esac
 
         # ── 2. Probe Audio Codec ──────────────────────────────────────
         acodec=$(ffprobe -v error -select_streams a:0 \
@@ -272,6 +311,14 @@ for dir in "${INPUT_DIRS[@]}"; do
             md_out=$(ffmpeg -v error -nostdin -i "$tmp_path" -map 0:v:0 -c copy -f md5 - 2>/dev/null </dev/null)
             [[ -n "$md_src" && "$md_src" == "$md_out" ]] || vid_ok=0
         fi
+        # Safety net: never publish an output whose video codec is unknown/bvc2
+        out_vc=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+                    -of csv=p=0 "$tmp_path" </dev/null 2>/dev/null | head -1)
+        out_vt=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_tag_string \
+                    -of csv=p=0 "$tmp_path" </dev/null 2>/dev/null | head -1)
+        if [[ -z "$out_vc" || "$out_vc" == "none" || "$out_vc" == "unknown" || "$out_vt" == bvc* ]]; then
+            vid_ok=0
+        fi
         if (( out_size > 0 && vid_ok == 1 )) \
            && ffprobe -v error -i "$tmp_path" \
                   -show_entries format=duration -of csv=p=0 \
@@ -298,8 +345,14 @@ for dir in "${INPUT_DIRS[@]}"; do
              \) -print0 2>/dev/null)
 done
 
-log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip, ByteVC2 passthrough: $count_bvc2"
-printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d, ByteVC2(audio-only fix)=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip" "$count_bvc2"
+log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip, bvc2 re-downloaded: $count_bvc2, bvc2 kept: $count_unsup"
+printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d, bvc2 redownloaded=%d, bvc2 kept=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip" "$count_bvc2" "$count_unsup"
+
+# Re-downloaded H.264 copies were created mid-run: normalize them right now
+if (( count_bvc2 > 0 )) && [[ -z "${NORMALIZE_PASS2:-}" ]]; then
+    printf "${C_BLUE}[*] Second pass: normalizing re-downloaded H.264 copies...${C_RESET}\n"
+    NORMALIZE_PASS2=1 MEDIA_SCAN_QUEUE="$SCAN_QUEUE" bash "${BASH_SOURCE[0]}" </dev/null
+fi
 
 if (( SCAN_OWNER == 1 )); then
     scan_queue "$SCAN_QUEUE"
