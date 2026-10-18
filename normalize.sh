@@ -5,7 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.1.2
+#  @version     2.2.0
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -35,10 +35,6 @@ readonly INPUT_DIRS=(
 readonly VIDEO_OUT="$SD/Movies/NormalizedVideo"
 readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/media_processor_log.txt"
 
-readonly UNSUPPORTED_DIR="$SD/Movies/Unsupported_bvc2"
-readonly UNSUPPORTED_LIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/unsupported_videos.txt"
-# UNSUPPORTED_ACTION: "skip" = leave file in place (remembered, not retried) | "move" = move to $UNSUPPORTED_DIR
-readonly UNSUPPORTED_ACTION="${UNSUPPORTED_ACTION:-skip}"
 
 readonly TARGET_LUFS="${TARGET_LUFS:--12}"
 readonly AUDIO_BITRATE="${AUDIO_BITRATE:-192k}"
@@ -66,7 +62,6 @@ Supported Formats:
 
 Environment Overrides:
   TARGET_LUFS      Target loudness in LUFS (Default: -12)
-  UNSUPPORTED_ACTION  skip (default) or move, for ByteVC2 (bvc2) videos ffmpeg can't read
   AUDIO_BITRATE    Audio bitrate for normalized AAC stream (Default: 192k)
   MEDIA_DIR        Custom root media directory (Default: $SD)
 
@@ -118,22 +113,17 @@ trap '[[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"; log 
 # ── Execution ─────────────────────────────────────────────────────────────────
 mkdir -p "$VIDEO_OUT" "$(dirname "$LOG")"
 log "Beginning video normalization stage..."
-printf "${C_BLUE}[*] Scanning for pending videos...${C_RESET}\n"
+printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.2.0)${C_RESET}\n"
 
 count_ok=0
 count_fail=0
 count_skip=0
-count_unsup=0
+count_bvc2=0
 
 for dir in "${INPUT_DIRS[@]}"; do
     [[ -d "$dir" ]] || continue
     while IFS= read -r -d '' src <&3; do
         orig_name=$(basename "$src")
-        if [[ -f "$UNSUPPORTED_LIST" ]] \
-           && grep -qxF "$(printf '%s\t%s' "$orig_name" "$(wc -c < "$src")")" "$UNSUPPORTED_LIST"; then
-            (( ++count_unsup )) || true
-            continue
-        fi
         clean_name=$(sanitize_name "$orig_name")
         target_path=$(get_unique_dest "$VIDEO_OUT" "$clean_name")
         tmp_path="${target_path%.mp4}.tmp.mp4"
@@ -161,28 +151,24 @@ for dir in "${INPUT_DIRS[@]}"; do
             continue
         fi
 
-        # ByteVC2 (bvc2) / unknown codecs: ffmpeg cannot decode OR mux them.
-        # No fallback can work, so detect early, never touch/delete the source.
+        # ByteVC2 (bvc2): ffmpeg can't decode it, but the stream can be copied
+        # untouched into a MOV-muxed (isom brand) file while only the audio is
+        # normalized. Video bytes stay identical; verified by MD5 below.
+        bvc2_mode=0
+        mux_args=(-movflags +faststart)
         if [[ -z "$vcodec" || "$vcodec" == "none" || "$vcodec" == "unknown" \
               || "$vtag" == bvc* ]]; then
-            printf "  ${C_YELLOW}[UNSUPPORTED] ByteVC2/unknown video codec (%s). Source kept.${C_RESET}\n" "${vtag:-?}"
-            log "  UNSUPPORTED: $orig_name codec=${vcodec:-?} tag=${vtag:-?}"
-            if [[ "$UNSUPPORTED_ACTION" == "move" ]]; then
-                mkdir -p "$UNSUPPORTED_DIR"
-                mv -n "$src" "$UNSUPPORTED_DIR/" 2>/dev/null \
-                    && printf "  ${C_YELLOW}    -> moved to %s${C_RESET}\n" "$UNSUPPORTED_DIR"
-            else
-                printf '%s\t%s\n' "$orig_name" "$(wc -c < "$src")" >> "$UNSUPPORTED_LIST"
-            fi
-            (( ++count_unsup )) || true
-            CURRENT_TMP=""
-            continue
+            bvc2_mode=1
+            vcodec_args=(-c:v copy -tag:v "${vtag:-bvc2}")
+            mux_args=(-movflags +faststart -f mov -brand isom)
+            printf "  ${C_YELLOW}[bvc2] ByteVC2 video: copying video untouched, normalizing audio only.${C_RESET}\n"
+            log "  BVC2 passthrough: $orig_name codec=${vcodec:-?} tag=${vtag:-?}"
+        else
+            case "$vcodec" in
+                h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
+                *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
+            esac
         fi
-
-        case "$vcodec" in
-            h264|hevc|mpeg4) vcodec_args=("-c:v" "copy") ;;
-            *)               vcodec_args=("-c:v" "libx264" "-preset" "fast" "-crf" "18" "-pix_fmt" "yuv420p") ;;
-        esac
 
         # ── 2. Probe Audio Codec ──────────────────────────────────────
         acodec=$(ffprobe -v error -select_streams a:0 \
@@ -194,7 +180,7 @@ for dir in "${INPUT_DIRS[@]}"; do
             log "  No audio stream detected; remuxing video only"
             if ! ffmpeg -hide_banner -nostdin -nostats -y \
                     -i "$src" -map 0:v:0 "${vcodec_args[@]}" \
-                    -movflags +faststart -an "$tmp_path" 2>>"$LOG"; then
+                    "${mux_args[@]}" -an "$tmp_path" 2>>"$LOG"; then
                 printf "  ${C_RED}[ERROR] Remux operation failed.${C_RESET}\n" >&2
                 log "  ERROR: Remux failed for $orig_name"
                 rm -f "$tmp_path"
@@ -226,19 +212,19 @@ for dir in "${INPUT_DIRS[@]}"; do
                     -i "$src" -map 0:v:0 -map 0:a:0 \
                     "${vcodec_args[@]}" \
                     -af "volume=${linear_gain}dB" -c:a aac -b:a "$AUDIO_BITRATE" \
-                    -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                    "${mux_args[@]}" "$tmp_path" 2>>"$LOG"; then
                 printf "  ${C_YELLOW}[!] Audio too short/corrupt. Using safe copy...${C_RESET}\n"
                 log "  WARNING: Audio gain render failed for $orig_name. Attempting -c:a copy fallback."
                 if ! ffmpeg -hide_banner -nostdin -nostats -y \
                         -i "$src" -map 0:v:0 -map 0:a:0 \
                         "${vcodec_args[@]}" -c:a copy \
-                        -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                        "${mux_args[@]}" "$tmp_path" 2>>"$LOG"; then
                     printf "  ${C_YELLOW}[!] Audio completely unreadable. Stripping audio to save video...${C_RESET}\n"
                     log "  WARNING: Safe copy failed for $orig_name. Attempting -an (video only) fallback."
                     if ! ffmpeg -hide_banner -nostdin -nostats -y \
                             -i "$src" -map 0:v:0 \
                             "${vcodec_args[@]}" -an \
-                            -movflags +faststart "$tmp_path" 2>>"$LOG"; then
+                            "${mux_args[@]}" "$tmp_path" 2>>"$LOG"; then
                         printf "  ${C_RED}[ERROR] Ultimate fallback failed. File unprocessable.${C_RESET}\n" >&2
                         log "  ERROR: Ultimate fallback failed for $orig_name"
                         rm -f "$tmp_path"
@@ -252,7 +238,13 @@ for dir in "${INPUT_DIRS[@]}"; do
 
         # ── 5. Verification & Atomic Commit ───────────────────────────
         out_size=$(wc -c < "$tmp_path" 2>/dev/null || echo 0)
-        if (( out_size > 0 )) \
+        vid_ok=1
+        if (( bvc2_mode == 1 )) && [[ -f "$tmp_path" ]]; then
+            md_src=$(ffmpeg -v error -nostdin -i "$src" -map 0:v:0 -c copy -f md5 - 2>/dev/null </dev/null)
+            md_out=$(ffmpeg -v error -nostdin -i "$tmp_path" -map 0:v:0 -c copy -f md5 - 2>/dev/null </dev/null)
+            [[ -n "$md_src" && "$md_src" == "$md_out" ]] || vid_ok=0
+        fi
+        if (( out_size > 0 && vid_ok == 1 )) \
            && ffprobe -v error -i "$tmp_path" \
                   -show_entries format=duration -of csv=p=0 \
                   2>/dev/null | grep -q '[0-9]'; then
@@ -262,6 +254,7 @@ for dir in "${INPUT_DIRS[@]}"; do
             printf "  ${C_GREEN}[✓] Verified & Saved:${C_RESET} %s (%s bytes)\n" "$(basename "$target_path")" "$out_size"
             log "  SUCCESS: $orig_name -> $(basename "$target_path") [${out_size} bytes]"
             (( ++count_ok )) || true
+            (( bvc2_mode == 1 )) && { (( ++count_bvc2 )) || true; }
         else
             rm -f "$tmp_path"
             printf "  ${C_RED}[ERROR] Verification check failed. Source file preserved.${C_RESET}\n" >&2
@@ -277,5 +270,5 @@ for dir in "${INPUT_DIRS[@]}"; do
              \) -print0 2>/dev/null)
 done
 
-log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip, Unsupported: $count_unsup"
-printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d, Unsupported(bvc2)=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip" "$count_unsup"
+log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip, ByteVC2 passthrough: $count_bvc2"
+printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d, ByteVC2(audio-only fix)=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip" "$count_bvc2"

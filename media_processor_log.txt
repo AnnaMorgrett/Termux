@@ -5404,3 +5404,47 @@ frame=  408 fps=0.0 q=-1.0 Lsize=    4118KiB time=00:00:13.61 bitrate=2478.7kbit
 [2026-10-18 10:41:11] [NORMALIZE]   SUCCESS: Warga sipil mbak 🤦‍♂️ ｜ Ketawa Tujuh.mp4 -> Warga_sipil_mbak_Ketawa_Tujuh.mp4 [4217109 bytes]
 [2026-10-18 10:41:11] [NORMALIZE] Video normalization finished. Success: 7, Fail: 0, Skipped: 0, Unsupported: 16
 [2026-10-18 10:41:11] [MASTER] ════════════ Session Finished ════════════
+[2026-10-18 10:42:10] [MASTER] ════════════ Session Start ════════════
+[2026-10-18 10:42:10] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-18 10:42:13] [MASTER] yt-dlp update routine finished.
+[2026-10-18 10:42:13] [MASTER] Invoking move_assets.sh...
+[2026-10-18 10:42:13] [ASSETS] Beginning non-video asset scan...
+[2026-10-18 10:42:13] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-18 10:42:13] [MASTER] Invoking normalize.sh...
+[2026-10-18 10:42:13] [NORMALIZE] Beginning video normalization stage...
+[2026-10-18 10:42:14] [NORMALIZE] Processing video: jett2v_2026-10-15_7696856963942010134.mp4
+[2026-10-18 10:42:14] [NORMALIZE]   UNSUPPORTED: jett2v_2026-10-15_7696856963942010134.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:14] [NORMALIZE] Processing video: optimus_reacts_2026-10-17_7697573085934816545.mp4
+[2026-10-18 10:42:14] [NORMALIZE]   UNSUPPORTED: optimus_reacts_2026-10-17_7697573085934816545.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:15] [NORMALIZE] Processing video: maiwwrrr16_2026-10-17_7697597218001292566.mp4
+[2026-10-18 10:42:15] [NORMALIZE]   UNSUPPORTED: maiwwrrr16_2026-10-17_7697597218001292566.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:15] [NORMALIZE] Processing video: _ecsb__2026-10-18_7697566960111848737.mp4
+[2026-10-18 10:42:15] [NORMALIZE]   UNSUPPORTED: _ecsb__2026-10-18_7697566960111848737.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:16] [NORMALIZE] Processing video: barbrush1_2026-09-24_7688801492072975638.mp4
+[2026-10-18 10:42:16] [NORMALIZE]   UNSUPPORTED: barbrush1_2026-09-24_7688801492072975638.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:16] [NORMALIZE] Processing video: axrxiii_2026-08-20_7676116379283492118.mp4
+[2026-10-18 10:42:16] [NORMALIZE]   UNSUPPORTED: axrxiii_2026-08-20_7676116379283492118.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:17] [NORMALIZE] Processing video: skydssth_nder_2026-10-16_7697299153218456854.mp4
+[2026-10-18 10:42:17] [NORMALIZE]   UNSUPPORTED: skydssth_nder_2026-10-16_7697299153218456854.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:17] [NORMALIZE] Processing video: le0mn4_2026-10-17_7697333448087719190.mp4
+[2026-10-18 10:42:18] [NORMALIZE]   UNSUPPORTED: le0mn4_2026-10-17_7697333448087719190.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:18] [NORMALIZE] Processing video: linuxuser1510_2026-10-16_7697291257374084384.mp4
+[2026-10-18 10:42:18] [NORMALIZE]   UNSUPPORTED: linuxuser1510_2026-10-16_7697291257374084384.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:18] [NORMALIZE] Processing video: lewis_norcross2005_2026-10-16_7697280510833331478.mp4
+[2026-10-18 10:42:19] [NORMALIZE]   UNSUPPORTED: lewis_norcross2005_2026-10-16_7697280510833331478.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:19] [NORMALIZE] Processing video: baiba7606_2026-10-17_7697427879256132886.mp4
+[2026-10-18 10:42:19] [NORMALIZE]   UNSUPPORTED: baiba7606_2026-10-17_7697427879256132886.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:19] [NORMALIZE] Processing video: slimmyfn_2026-10-17_7697647590866734352.mp4
+[2026-10-18 10:42:20] [NORMALIZE]   UNSUPPORTED: slimmyfn_2026-10-17_7697647590866734352.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:20] [NORMALIZE] Processing video: franciscarl333_2026-10-09_7694703316302941472.mp4
+[2026-10-18 10:42:20] [NORMALIZE]   UNSUPPORTED: franciscarl333_2026-10-09_7694703316302941472.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:21] [NORMALIZE] Processing video: wendybestaburger_2026-10-17_7697536451549941014.mp4
+[2026-10-18 10:42:21] [NORMALIZE]   UNSUPPORTED: wendybestaburger_2026-10-17_7697536451549941014.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:21] [NORMALIZE] Processing video: maxi_es_god_2026-10-14_7696516759666429202.mp4
+[2026-10-18 10:42:21] [NORMALIZE]   UNSUPPORTED: maxi_es_god_2026-10-14_7696516759666429202.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:22] [NORMALIZE] Processing video: _ace_ace_ace_ace_ace__2026-10-18_7697730277094870294.mp4
+[2026-10-18 10:42:22] [NORMALIZE]   UNSUPPORTED: _ace_ace_ace_ace_ace__2026-10-18_7697730277094870294.mp4 codec=unknown tag=bvc2
+[2026-10-18 10:42:22] [NORMALIZE] Video normalization finished. Success: 0, Fail: 0, Skipped: 0, Unsupported: 16
+[2026-10-18 10:42:22] [MASTER] ════════════ Session Finished ════════════
