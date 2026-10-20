@@ -82,7 +82,9 @@ scan_queue() {
     [[ -s "$qf" ]] || return 0
     while IFS= read -r f; do
         [[ -f "$f" ]] && files+=("$f")
-    done < <(sort -u "$qf")
+    done < <(sort -u "$qf" | while IFS= read -r q; do
+                [[ -f "$q" ]] && printf '%s\t%s\n' "$(stat -c %Y "$q" 2>/dev/null || echo 0)" "$q"
+             done | sort -t "$(printf '\t')" -k1,1n -s | cut -f2-)
     (( ${#files[@]} > 0 )) || return 0
     if command -v termux-media-scan &>/dev/null; then
         rc=0

@@ -5,7 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.3.0
+#  @version     2.4.0
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -94,7 +94,9 @@ scan_queue() {
     [[ -s "$qf" ]] || return 0
     while IFS= read -r f; do
         [[ -f "$f" ]] && files+=("$f")
-    done < <(sort -u "$qf")
+    done < <(sort -u "$qf" | while IFS= read -r q; do
+                [[ -f "$q" ]] && printf '%s\t%s\n' "$(stat -c %Y "$q" 2>/dev/null || echo 0)" "$q"
+             done | sort -t "$(printf '\t')" -k1,1n -s | cut -f2-)
     (( ${#files[@]} > 0 )) || return 0
     if command -v termux-media-scan &>/dev/null; then
         rc=0
@@ -124,10 +126,16 @@ redownload_h264() {
     # the filename). The bvc2 original is deleted ONLY after the new file is
     # verified (h264/hevc codec + full decode with zero errors).
     local stem="$1" src="$2" id user url tmpd out vc ferr
-    id="${stem##*_}"
-    user="${stem%_*_*}"
-    [[ "$id" =~ ^[0-9]{15,}$ && -n "$user" ]] || return 1
-    command -v yt-dlp &>/dev/null || return 1
+    REDL_REASON=""
+    # name format: user_YYYY-MM-DD_ID, optionally followed by " (1)" duplicate suffix
+    if [[ "$stem" =~ ^(.+)_[0-9]{4}-[0-9]{2}-[0-9]{2}_([0-9]{15,})([[:space:]]*\([0-9]+\))?$ ]]; then
+        user="${BASH_REMATCH[1]}"; id="${BASH_REMATCH[2]}"
+    else
+        REDL_REASON="filename has no user/date/ID pattern"; return 1
+    fi
+    if ! command -v yt-dlp &>/dev/null; then
+        REDL_REASON="yt-dlp not found"; return 1
+    fi
     url="https://www.tiktok.com/@${user}/video/${id}"
     tmpd=$(mktemp -d "$SD/Download/.redl.XXXXXX") || return 1
     printf "  ${C_BLUE}[~] Re-downloading as H.264:${C_RESET} %s\n" "$url"
@@ -136,17 +144,20 @@ redownload_h264() {
            -o "$tmpd/%(id)s.%(ext)s" "$url" </dev/null >> "$LOG" 2>&1
     out=$(find "$tmpd" -maxdepth 1 -type f -name '*.mp4' | head -1)
     if [[ -z "$out" ]]; then
+        REDL_REASON="yt-dlp downloaded nothing (see log)"
         rm -rf "$tmpd"; return 1
     fi
     vc=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
             -of csv=p=0 "$out" </dev/null 2>/dev/null | head -1)
     ferr=$(ffmpeg -v error -nostdin -i "$out" -f null - </dev/null 2>&1 | head -3)
     if [[ "$vc" =~ ^(h264|hevc)$ && -z "$ferr" ]]; then
+        touch -r "$src" "$out" 2>/dev/null || true
         mv -f "$out" "$(dirname "$src")/${stem}_h264.mp4" && rm -f "$src"
         rm -rf "$tmpd"
         log "  REDOWNLOAD OK ($vc): $stem -> ${stem}_h264.mp4; bvc2 original removed"
         return 0
     fi
+    REDL_REASON="downloaded file rejected (codec=${vc:-?}${ferr:+, decode errors})"
     log "  REDOWNLOAD REJECTED (codec=${vc:-?} err=${ferr:-none}) for $stem"
     rm -rf "$tmpd"; return 1
 }
@@ -174,7 +185,7 @@ trap '[[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"; log 
 # ── Execution ─────────────────────────────────────────────────────────────────
 mkdir -p "$VIDEO_OUT" "$(dirname "$LOG")"
 log "Beginning video normalization stage..."
-printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.3.0)${C_RESET}\n"
+printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.4.0)${C_RESET}\n"
 
 count_ok=0
 count_fail=0
@@ -225,7 +236,7 @@ for dir in "${INPUT_DIRS[@]}"; do
                 printf "  ${C_GREEN}[✓] Replaced with verified H.264 copy (normalized in the pass below).${C_RESET}\n"
                 (( ++count_bvc2 )) || true
             else
-                printf "  ${C_YELLOW}[!] Could not get an H.264 copy. Original kept untouched.${C_RESET}\n"
+                printf "  ${C_YELLOW}[!] Could not get an H.264 copy (%s). Original kept untouched.${C_RESET}\n" "${REDL_REASON:-unknown}"
                 log "  BVC2 kept: $orig_name"
                 (( ++count_unsup )) || true
             fi
@@ -323,6 +334,7 @@ for dir in "${INPUT_DIRS[@]}"; do
            && ffprobe -v error -i "$tmp_path" \
                   -show_entries format=duration -of csv=p=0 \
                   2>/dev/null | grep -q '[0-9]'; then
+            touch -r "$src" "$tmp_path" 2>/dev/null || true   # keep original date => same gallery position
             mv -f "$tmp_path" "$target_path"
             rm -f "$src"
             queue_scan "$target_path"
