@@ -14146,3 +14146,814 @@ yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
 [2026-10-20 08:22:19] [NORMALIZE]   BVC2 kept: maxi_es_god_2026-10-14_7696516759666429202 (1).mp4
 [2026-10-20 08:22:19] [NORMALIZE] Video normalization finished. Success: 0, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 1
 [2026-10-20 08:22:19] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 13:27:09] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 13:27:09] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 13:27:10] [MASTER] yt-dlp update routine finished.
+[2026-10-20 13:27:10] [MASTER] Invoking move_assets.sh...
+[2026-10-20 13:27:10] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 13:27:10] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 13:27:10] [MASTER] Invoking normalize.sh...
+[2026-10-20 13:27:10] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 13:27:10] [NORMALIZE] Processing video: maxi_es_god_2026-10-14_7696516759666429202 (1).mp4
+[2026-10-20 13:27:11] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@maxi_es_god/video/7696516759666429202
+[TikTok] Extracting URL: https://www.tiktok.com/@maxi_es_god/video/7696516759666429202
+[TikTok] 7696516759666429202: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7696516759666429202: Downloading webpage with challenge cookie
+[info] 7696516759666429202: Downloading 1 format(s): h264_540p_750725-1
+[download] Destination: /storage/emulated/0/Download/.redl.RLIX4L/7696516759666429202.mp4
+[download]   0.1% of  802.23KiB at  126.49KiB/s ETA 00:06[download]   0.4% of  802.23KiB at  336.00KiB/s ETA 00:02[download]   0.9% of  802.23KiB at  707.63KiB/s ETA 00:01[download]   1.9% of  802.23KiB at    1.38MiB/s ETA 00:00[download]   3.9% of  802.23KiB at    1.92MiB/s ETA 00:00[download]   7.9% of  802.23KiB at  964.30KiB/s ETA 00:00[download]  15.8% of  802.23KiB at    1.41MiB/s ETA 00:00[download]  31.8% of  802.23KiB at    1.61MiB/s ETA 00:00[download]  63.7% of  802.23KiB at    2.28MiB/s ETA 00:00[download] 100.0% of  802.23KiB at    2.88MiB/s ETA 00:00[download] 100% of  802.23KiB in 00:00:00 at 1.46MiB/s   
+[2026-10-20 13:27:14] [NORMALIZE]   REDOWNLOAD OK (h264): maxi_es_god_2026-10-14_7696516759666429202 (1) -> maxi_es_god_2026-10-14_7696516759666429202 (1)_h264.mp4; bvc2 original removed
+[2026-10-20 13:27:14] [NORMALIZE] Processing video: Sekali digas sesak nafas.mp4
+[2026-10-20 13:27:15] [NORMALIZE]   LUFS: -14.20 -> Applying Constant Linear Gain: 2.20 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/Download/yt-dlp/Sekali digas sesak nafas.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+  Duration: 00:00:07.51, start: 0.000000, bitrate: 1239 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1280x720 [SAR 1:1 DAR 16:9], 1197 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 52 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/Sekali_digas_sesak_nafas.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 1197 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007dcacda9f0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007e9acd8190] video:1081KiB audio:174KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.744249%
+frame=  222 fps=0.0 q=-1.0 Lsize=    1264KiB time=00:00:07.40 bitrate=1399.1kbits/s speed=33.3x elapsed=0:00:00.22    
+[aac @ 0xb400007deace1650] Qavg: 413.421
+[2026-10-20 13:27:15] [NORMALIZE]   SUCCESS: Sekali digas sesak nafas.mp4 -> Sekali_digas_sesak_nafas.mp4 [1294617 bytes]
+[2026-10-20 13:27:15] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 1, bvc2 kept: 0
+[2026-10-20 13:27:15] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 13:27:15] [NORMALIZE] Processing video: maxi_es_god_2026-10-14_7696516759666429202 (1)_h264.mp4
+[2026-10-20 13:27:16] [NORMALIZE]   LUFS: -22.89 -> Applying Constant Linear Gain: 10.89 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/maxi_es_god_2026-10-14_7696516759666429202 (1)_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db7o7f7og65jng7p6fvg
+    vid_md5         : f10b63982a159fb41a8288dfed0f3ba1
+    encoder         : Lavf58.76.100
+  Duration: 00:00:08.75, start: 0.000000, bitrate: 750 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/bt470bg/smpte170m, progressive), 576x1032 [SAR 1:1 DAR 24:43], 711 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/maxi_es_god_2026-10-14_7696516759666429202_1_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000db7o7f7og65jng7p6fvg
+    vid_md5         : f10b63982a159fb41a8288dfed0f3ba1
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/bt470bg/smpte170m, progressive), 576x1032 [SAR 1:1 DAR 24:43], q=2-31, 711 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400006f54c1b650] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400006fd4c264d0] video:759KiB audio:208KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.100505%
+frame=  262 fps=0.0 q=-1.0 Lsize=     978KiB time=00:00:08.75 bitrate= 914.9kbits/s speed=49.4x elapsed=0:00:00.17    
+[aac @ 0xb400006f34c1f820] Qavg: 479.238
+[2026-10-20 13:27:16] [NORMALIZE]   SUCCESS: maxi_es_god_2026-10-14_7696516759666429202 (1)_h264.mp4 -> maxi_es_god_2026-10-14_7696516759666429202_1_h264.mp4 [1001171 bytes]
+[2026-10-20 13:27:17] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 0
+[2026-10-20 13:27:17] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 17:43:06] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 17:43:06] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 17:43:07] [MASTER] yt-dlp update routine finished.
+[2026-10-20 17:43:07] [MASTER] Invoking move_assets.sh...
+[2026-10-20 17:43:08] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 17:43:08] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 17:43:08] [MASTER] Invoking normalize.sh...
+[2026-10-20 17:43:08] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:43:08] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:43:08] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7697861941447970069: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:43:09] [NORMALIZE]   BVC2 kept: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:43:09] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:43:09] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7697861941447970069: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:43:11] [NORMALIZE]   BVC2 kept: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:43:11] [NORMALIZE] Video normalization finished. Success: 0, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 2
+[2026-10-20 17:43:11] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 17:48:19] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 17:48:19] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 17:48:20] [MASTER] yt-dlp update routine finished.
+[2026-10-20 17:48:20] [MASTER] Invoking move_assets.sh...
+[2026-10-20 17:48:20] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 17:48:20] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 17:48:20] [MASTER] Invoking normalize.sh...
+[2026-10-20 17:48:20] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:48:20] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:48:20] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7697861941447970069: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:48:26] [NORMALIZE]   BVC2 kept: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:48:26] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:48:26] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7697861941447970069: Unable to download webpage: The read operation timed out (caused by TransportError('The read operation timed out'))
+[2026-10-20 17:48:50] [NORMALIZE]   BVC2 kept: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:48:50] [NORMALIZE] Processing video: zevs_20115_2026-10-20_7698601207102704903.mp4
+[2026-10-20 17:48:50] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@zevs_20115/video/7698601207102704903
+[TikTok] Extracting URL: https://www.tiktok.com/@zevs_20115/video/7698601207102704903
+[TikTok] 7698601207102704903: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698601207102704903: Downloading webpage with challenge cookie
+[info] 7698601207102704903: Downloading 1 format(s): h264_540p_383397-1
+[download] Destination: /storage/emulated/0/Download/.redl.ncxz7n/7698601207102704903.mp4
+[download]   0.2% of  542.29KiB at    9.40KiB/s ETA 00:57[download]   0.6% of  542.29KiB at   27.80KiB/s ETA 00:19[download]   1.3% of  542.29KiB at   64.26KiB/s ETA 00:08[download]   2.8% of  542.29KiB at   57.75KiB/s ETA 00:09[download]   5.7% of  542.29KiB at  113.49KiB/s ETA 00:04[download]  11.6% of  542.29KiB at  192.42KiB/s ETA 00:02[download]  23.4% of  542.29KiB at  364.51KiB/s ETA 00:01[download]  47.0% of  542.29KiB at  429.52KiB/s ETA 00:00[download]  94.2% of  542.29KiB at  427.53KiB/s ETA 00:00[download] 100.0% of  542.29KiB at  414.53KiB/s ETA 00:00[download] 100% of  542.29KiB in 00:00:01 at 348.16KiB/s 
+[2026-10-20 17:48:56] [NORMALIZE]   REDOWNLOAD OK (h264): zevs_20115_2026-10-20_7698601207102704903 -> zevs_20115_2026-10-20_7698601207102704903_h264.mp4; bvc2 original removed
+[2026-10-20 17:48:56] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:48:56] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] Extracting URL: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] 7698387067788692758: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698387067788692758: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7698387067788692758: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:48:57] [NORMALIZE]   BVC2 kept: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:48:57] [NORMALIZE] Processing video: toomuchguapppp_2026-10-19_7698057102098435342.mp4
+[2026-10-20 17:48:58] [NORMALIZE]   LUFS: -12.49 -> Applying Constant Linear Gain: 0.49 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/toomuchguapppp_2026-10-19_7698057102098435342.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000dbafs9fog65o99t8mvig
+    vid_md5         : 9df0753d8f62e6f08035683a807ecf8e
+    encoder         : Lavf58.76.100
+  Duration: 00:00:07.53, start: 0.000000, bitrate: 587 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 65 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x720 [SAR 1:1 DAR 1:1], 513 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/toomuchguapppp_2026-10-19_7698057102098435342.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000dbafs9fog65o99t8mvig
+    vid_md5         : 9df0753d8f62e6f08035683a807ecf8e
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x720 [SAR 1:1 DAR 1:1], q=2-31, 513 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007bec890090] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007c3c883930] video:472KiB audio:176KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.454424%
+frame=  226 fps=0.0 q=-1.0 Lsize=     658KiB time=00:00:07.49 bitrate= 719.0kbits/s speed=27.2x elapsed=0:00:00.27    
+[aac @ 0xb400007c2c8860c0] Qavg: 320.578
+[2026-10-20 17:48:59] [NORMALIZE]   SUCCESS: toomuchguapppp_2026-10-19_7698057102098435342.mp4 -> toomuchguapppp_2026-10-19_7698057102098435342.mp4 [673910 bytes]
+[2026-10-20 17:48:59] [NORMALIZE] Processing video: berryontop59_2026-10-19_7698272202831039757.mp4
+[2026-10-20 17:49:01] [NORMALIZE]   LUFS: -26.74 -> Applying Constant Linear Gain: 14.74 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/berryontop59_2026-10-19_7698272202831039757.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000dbas3bfog65ras74qodg
+    vid_md5         : 2ebccd021960013b0b3b01b87674bda5
+    encoder         : Lavf58.76.100
+  Duration: 00:00:50.08, start: 0.000000, bitrate: 292 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 64 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/smpte432/bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], 221 kb/s, 29.76 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/berryontop59_2026-10-19_7698272202831039757.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v12044gd0000dbas3bfog65ras74qodg
+    vid_md5         : 2ebccd021960013b0b3b01b87674bda5
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/smpte432/bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], q=2-31, 221 kb/s, 29.76 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000071f8571e30] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007178574c50] video:1354KiB audio:1181KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.141291%
+frame= 1490 fps=0.0 q=-1.0 Lsize=    2590KiB time=00:00:50.08 bitrate= 423.6kbits/s speed=52.8x elapsed=0:00:00.94    
+[aac @ 0xb4000072e856ee40] Qavg: 896.972
+[2026-10-20 17:49:02] [NORMALIZE]   SUCCESS: berryontop59_2026-10-19_7698272202831039757.mp4 -> berryontop59_2026-10-19_7698272202831039757.mp4 [2651973 bytes]
+[2026-10-20 17:49:02] [NORMALIZE] Processing video: holydiver898_2026-10-19_7698109487227391264.mp4
+[2026-10-20 17:49:03] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@holydiver898/video/7698109487227391264
+[TikTok] Extracting URL: https://www.tiktok.com/@holydiver898/video/7698109487227391264
+[TikTok] 7698109487227391264: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698109487227391264: Downloading webpage with challenge cookie
+[info] 7698109487227391264: Downloading 1 format(s): h264_540p_578989-1
+[download] Destination: /storage/emulated/0/Download/.redl.j1D7uV/7698109487227391264.mp4
+[download]   0.2% of  420.04KiB at   83.81KiB/s ETA 00:05[download]   0.7% of  420.04KiB at  228.17KiB/s ETA 00:01[download]   1.7% of  420.04KiB at   36.02KiB/s ETA 00:11[download]   3.6% of  420.04KiB at   76.03KiB/s ETA 00:05[download]   7.4% of  420.04KiB at  126.58KiB/s ETA 00:03[download]  15.0% of  420.04KiB at  225.77KiB/s ETA 00:01[download]  30.2% of  420.04KiB at  343.55KiB/s ETA 00:00[download]  60.7% of  420.04KiB at  324.67KiB/s ETA 00:00[download] 100.0% of  420.04KiB at  334.43KiB/s ETA 00:00[download] 100% of  420.04KiB in 00:00:01 at 231.52KiB/s 
+[2026-10-20 17:49:07] [NORMALIZE]   REDOWNLOAD OK (h264): holydiver898_2026-10-19_7698109487227391264 -> holydiver898_2026-10-19_7698109487227391264_h264.mp4; bvc2 original removed
+[2026-10-20 17:49:07] [NORMALIZE] Processing video: int_politics_2026-10-19_7698274824182975777.mp4
+[2026-10-20 17:49:10] [NORMALIZE]   LUFS: -15.58 -> Applying Constant Linear Gain: 3.58 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/int_politics_2026-10-19_7698274824182975777.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbas7cfog65g282jaf3g
+    vid_md5         : 71bef1d217071a8d384c4aad93112daa
+    encoder         : Lavf58.76.100
+  Duration: 00:01:07.22, start: 0.000000, bitrate: 250 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 588x576 [SAR 1:1 DAR 49:48], 211 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1[0x2](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/int_politics_2026-10-19_7698274824182975777.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbas7cfog65g282jaf3g
+    vid_md5         : 71bef1d217071a8d384c4aad93112daa
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 588x576 [SAR 1:1 DAR 49:48], q=2-31, 211 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000075bd83d970] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000760d8417b0] video:1734KiB audio:1583KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.190272%
+frame= 2016 fps=1708 q=-1.0 Lsize=    3390KiB time=00:01:07.22 bitrate= 413.1kbits/s speed=56.9x elapsed=0:00:01.18    
+[aac @ 0xb40000759d846820] Qavg: 478.755
+[2026-10-20 17:49:12] [NORMALIZE]   SUCCESS: int_politics_2026-10-19_7698274824182975777.mp4 -> int_politics_2026-10-19_7698274824182975777.mp4 [3471191 bytes]
+[2026-10-20 17:49:12] [NORMALIZE] Processing video: mooniboots_2026-10-18_7698010386271964446.mp4
+[2026-10-20 17:49:13] [NORMALIZE]   LUFS: -17.50 -> Applying Constant Linear Gain: 5.50 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/mooniboots_2026-10-18_7698010386271964446.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v15044gf0000dbad3i7og65grv6l9atg
+    vid_md5         : 6869f49e8eef42d926b8d992f4d36f6d
+    encoder         : Lavf58.76.100
+  Duration: 00:00:11.84, start: 0.000000, bitrate: 775 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 65 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], 703 kb/s, 26.96 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/mooniboots_2026-10-18_7698010386271964446.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v15044gf0000dbad3i7og65grv6l9atg
+    vid_md5         : 6869f49e8eef42d926b8d992f4d36f6d
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], q=2-31, 703 kb/s, 26.96 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb40000753b5da7f0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000749b5d2270] video:1016KiB audio:279KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.035242%
+frame=  319 fps=0.0 q=-1.0 Lsize=    1308KiB time=00:00:11.84 bitrate= 905.0kbits/s speed=26.5x elapsed=0:00:00.44    
+[aac @ 0xb40000763b5cc010] Qavg: 325.987
+[2026-10-20 17:49:14] [NORMALIZE]   SUCCESS: mooniboots_2026-10-18_7698010386271964446.mp4 -> mooniboots_2026-10-18_7698010386271964446.mp4 [1339405 bytes]
+[2026-10-20 17:49:14] [NORMALIZE] Processing video: zyven011_2026-10-19_7698115444405783841.mp4
+[2026-10-20 17:49:14] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@zyven011/video/7698115444405783841
+[TikTok] Extracting URL: https://www.tiktok.com/@zyven011/video/7698115444405783841
+[TikTok] 7698115444405783841: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698115444405783841: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7698115444405783841: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:49:17] [NORMALIZE]   BVC2 kept: zyven011_2026-10-19_7698115444405783841.mp4
+[2026-10-20 17:49:17] [NORMALIZE] Video normalization finished. Success: 4, Fail: 0, Skipped: 0, bvc2 re-downloaded: 2, bvc2 kept: 4
+[2026-10-20 17:49:17] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:49:17] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:49:18] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:49:18] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:49:18] [NORMALIZE] Processing video: holydiver898_2026-10-19_7698109487227391264_h264.mp4
+[2026-10-20 17:49:19] [NORMALIZE]   LUFS: -19.54 -> Applying Constant Linear Gain: 7.54 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/holydiver898_2026-10-19_7698109487227391264_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbaiqj7og65ub5ol82rg
+    vid_md5         : de41f81c46a722c58b49077d74f31b08
+    encoder         : Lavf58.76.100
+  Duration: 00:00:05.94, start: 0.000000, bitrate: 579 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 33 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], 537 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/holydiver898_2026-10-19_7698109487227391264_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbaiqj7og65ub5ol82rg
+    vid_md5         : de41f81c46a722c58b49077d74f31b08
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], q=2-31, 537 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007a8c4c4a50] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007adc4c7310] video:389KiB audio:142KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.461648%
+frame=  178 fps=0.0 q=-1.0 Lsize=     539KiB time=00:00:05.94 bitrate= 743.3kbits/s speed=17.8x elapsed=0:00:00.33    
+[aac @ 0xb400007afc4ccd00] Qavg: 583.280
+[2026-10-20 17:49:20] [NORMALIZE]   SUCCESS: holydiver898_2026-10-19_7698109487227391264_h264.mp4 -> holydiver898_2026-10-19_7698109487227391264_h264.mp4 [552065 bytes]
+[2026-10-20 17:49:20] [NORMALIZE] Processing video: zyven011_2026-10-19_7698115444405783841.mp4
+[2026-10-20 17:49:21] [NORMALIZE] Processing video: zevs_20115_2026-10-20_7698601207102704903_h264.mp4
+[2026-10-20 17:49:22] [NORMALIZE]   LUFS: -7.66 -> Applying Constant Linear Gain: -4.34 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/zevs_20115_2026-10-20_7698601207102704903_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dbbepunog65p07c0elpg
+    vid_md5         : 2685197b49bc8fb166552da9a152761f
+    encoder         : Lavf58.76.100
+  Duration: 00:00:11.59, start: 0.000000, bitrate: 383 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x576 [SAR 1:1 DAR 1:1], 343 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/zevs_20115_2026-10-20_7698601207102704903_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dbbepunog65p07c0elpg
+    vid_md5         : 2685197b49bc8fb166552da9a152761f
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x576 [SAR 1:1 DAR 1:1], q=2-31, 343 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007d4b20cb70] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007c6b20a3f0] video:485KiB audio:274KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.802497%
+frame=  347 fps=0.0 q=-1.0 Lsize=     773KiB time=00:00:11.58 bitrate= 546.4kbits/s speed=  29x elapsed=0:00:00.39    
+[aac @ 0xb400007bab2119f0] Qavg: 716.234
+[2026-10-20 17:49:23] [NORMALIZE]   SUCCESS: zevs_20115_2026-10-20_7698601207102704903_h264.mp4 -> zevs_20115_2026-10-20_7698601207102704903_h264.mp4 [791265 bytes]
+[2026-10-20 17:49:23] [NORMALIZE] Video normalization finished. Success: 2, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 4
+[2026-10-20 17:49:24] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 17:50:37] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 17:50:37] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 17:50:38] [MASTER] yt-dlp update routine finished.
+[2026-10-20 17:50:38] [MASTER] Invoking move_assets.sh...
+[2026-10-20 17:50:38] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 17:50:38] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 17:50:38] [MASTER] Invoking normalize.sh...
+[2026-10-20 17:50:38] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:50:38] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:50:38] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7697861941447970069: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:50:40] [NORMALIZE]   BVC2 kept: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:50:40] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069 (1).mp4
+[2026-10-20 17:50:40] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+[info] 7697861941447970069: Downloading 1 format(s): h264_540p_194305-1
+[download] Destination: /storage/emulated/0/Download/.redl.lXo2j2/7697861941447970069.mp4
+[download]   0.2% of  447.20KiB at   83.03KiB/s ETA 00:05[download]   0.7% of  447.20KiB at  205.01KiB/s ETA 00:02[download]   1.6% of  447.20KiB at  424.83KiB/s ETA 00:01[download]   3.4% of  447.20KiB at  831.16KiB/s ETA 00:00[download]   6.9% of  447.20KiB at    1.54MiB/s ETA 00:00[download]  14.1% of  447.20KiB at    1.76MiB/s ETA 00:00[download]  28.4% of  447.20KiB at    2.36MiB/s ETA 00:00[download]  57.0% of  447.20KiB at    2.42MiB/s ETA 00:00[download] 100.0% of  447.20KiB at    1.45MiB/s ETA 00:00[download] 100% of  447.20KiB in 00:00:00 at 986.13KiB/s 
+[2026-10-20 17:50:48] [NORMALIZE]   REDOWNLOAD OK (h264): ghxstarzz_2026-10-18_7697861941447970069 (1) -> ghxstarzz_2026-10-18_7697861941447970069 (1)_h264.mp4; bvc2 original removed
+[2026-10-20 17:50:48] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:50:49] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] Extracting URL: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] 7698387067788692758: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698387067788692758: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7698387067788692758: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:50:51] [NORMALIZE]   BVC2 kept: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:50:51] [NORMALIZE] Processing video: zyven011_2026-10-19_7698115444405783841.mp4
+[2026-10-20 17:50:51] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@zyven011/video/7698115444405783841
+[TikTok] Extracting URL: https://www.tiktok.com/@zyven011/video/7698115444405783841
+[TikTok] 7698115444405783841: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698115444405783841: Downloading webpage with challenge cookie
+[info] 7698115444405783841: Downloading 1 format(s): h264_540p_962859-1
+[download] Destination: /storage/emulated/0/Download/.redl.RsgtFT/7698115444405783841.mp4
+[download]   0.0% of    3.96MiB at   82.66KiB/s ETA 00:49[download]   0.1% of    3.96MiB at  229.10KiB/s ETA 00:17[download]   0.2% of    3.96MiB at  514.76KiB/s ETA 00:07[download]   0.4% of    3.96MiB at    1.05MiB/s ETA 00:03[download]   0.8% of    3.96MiB at    2.11MiB/s ETA 00:01[download]   1.6% of    3.96MiB at    2.11MiB/s ETA 00:01[download]   3.1% of    3.96MiB at    3.06MiB/s ETA 00:01[download]   6.3% of    3.96MiB at    3.64MiB/s ETA 00:01[download]  12.6% of    3.96MiB at    4.02MiB/s ETA 00:00[download]  25.2% of    3.96MiB at    1.71MiB/s ETA 00:01[download]  50.4% of    3.96MiB at    1.47MiB/s ETA 00:01[download]  83.1% of    3.96MiB at    1.43MiB/s ETA 00:00[download] 100.0% of    3.96MiB at    1.42MiB/s ETA 00:00[download] 100% of    3.96MiB in 00:00:03 at 1.27MiB/s   
+[2026-10-20 17:50:57] [NORMALIZE]   REDOWNLOAD OK (h264): zyven011_2026-10-19_7698115444405783841 -> zyven011_2026-10-19_7698115444405783841_h264.mp4; bvc2 original removed
+[2026-10-20 17:50:57] [NORMALIZE] Processing video: Ｉ　Ｗｉｌｌ　Ｂｅ　Ｗａｉｔｉｎｇ　ッ　ぺ椅ヒクー.mp4
+[2026-10-20 17:50:58] [NORMALIZE]   LUFS: -14.00 -> Applying Constant Linear Gain: 2.00 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/Download/yt-dlp/Ｉ　Ｗｉｌｌ　Ｂｅ　Ｗａｉｔｉｎｇ　ッ　ぺ椅ヒクー.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+  Duration: 00:00:17.09, start: 0.000000, bitrate: 444 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, smpte170m/bt470bg/smpte170m, progressive), 576x576 [SAR 1:1 DAR 1:1], 381 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 58 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/video_1792493457.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, smpte170m/bt470bg/smpte170m, progressive), 576x576 [SAR 1:1 DAR 1:1], q=2-31, 381 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007163cc62d0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb4000071f3cc76d0] video:790KiB audio:399KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.631866%
+frame=  509 fps=0.0 q=-1.0 Lsize=    1208KiB time=00:00:16.97 bitrate= 583.1kbits/s speed=40.1x elapsed=0:00:00.42    
+[aac @ 0xb4000070c3ccc960] Qavg: 415.337
+[2026-10-20 17:50:59] [NORMALIZE]   SUCCESS: Ｉ　Ｗｉｌｌ　Ｂｅ　Ｗａｉｔｉｎｇ　ッ　ぺ椅ヒクー.mp4 -> video_1792493457.mp4 [1237245 bytes]
+[2026-10-20 17:50:59] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 2, bvc2 kept: 2
+[2026-10-20 17:50:59] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:50:59] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:50:59] [NORMALIZE] Processing video: zyven011_2026-10-19_7698115444405783841_h264.mp4
+[2026-10-20 17:51:01] [NORMALIZE]   LUFS: -10.49 -> Applying Constant Linear Gain: -1.51 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/zyven011_2026-10-19_7698115444405783841_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbaj47nog65sg94pc7i0
+    vid_md5         : 48b9c675d56048eede4f46a0eb2e12d3
+    encoder         : Lavf58.76.100
+  Duration: 00:00:34.53, start: 0.000000, bitrate: 962 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], 923 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/zyven011_2026-10-19_7698115444405783841_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v26044gc0000dbaj47nog65sg94pc7i0
+    vid_md5         : 48b9c675d56048eede4f46a0eb2e12d3
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], q=2-31, 923 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000070ed6ca6d0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000707d6c48d0] video:3894KiB audio:819KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.806054%
+frame= 1036 fps=0.0 q=-1.0 Lsize=    4750KiB time=00:00:34.50 bitrate=1127.9kbits/s speed=43.1x elapsed=0:00:00.79    
+[aac @ 0xb40000709d6c0030] Qavg: 415.414
+[2026-10-20 17:51:02] [NORMALIZE]   SUCCESS: zyven011_2026-10-19_7698115444405783841_h264.mp4 -> zyven011_2026-10-19_7698115444405783841_h264.mp4 [4864506 bytes]
+[2026-10-20 17:51:02] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:51:03] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069 (1)_h264.mp4
+[2026-10-20 17:51:05] [NORMALIZE]   LUFS: -31.98 -> Applying Constant Linear Gain: 19.98 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/ghxstarzz_2026-10-18_7697861941447970069 (1)_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dba4p1fog65skcpjcpl0
+    vid_md5         : 69569a963989dfc4a631c0f7106b11eb
+    encoder         : Lavf58.76.100
+  Duration: 00:00:18.85, start: 0.000000, bitrate: 194 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], 154 kb/s, 27.24 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/ghxstarzz_2026-10-18_7697861941447970069_1_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dba4p1fog65skcpjcpl0
+    vid_md5         : 69569a963989dfc4a631c0f7106b11eb
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], q=2-31, 154 kb/s, 27.24 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007378b090f0] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007408b064d0] video:356KiB audio:445KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.588738%
+frame=  513 fps=0.0 q=-1.0 Lsize=     821KiB time=00:00:18.85 bitrate= 356.9kbits/s speed=21.3x elapsed=0:00:00.88    
+[aac @ 0xb400007368afa8b0] Qavg: 459.612
+[2026-10-20 17:51:06] [NORMALIZE]   SUCCESS: ghxstarzz_2026-10-18_7697861941447970069 (1)_h264.mp4 -> ghxstarzz_2026-10-18_7697861941447970069_1_h264.mp4 [840964 bytes]
+[2026-10-20 17:51:06] [NORMALIZE] Video normalization finished. Success: 2, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 2
+[2026-10-20 17:51:07] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 17:53:03] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 17:53:03] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 17:53:04] [MASTER] yt-dlp update routine finished.
+[2026-10-20 17:53:04] [MASTER] Invoking move_assets.sh...
+[2026-10-20 17:53:04] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 17:53:04] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 17:53:04] [MASTER] Invoking normalize.sh...
+[2026-10-20 17:53:04] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:53:04] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069.mp4
+[2026-10-20 17:53:05] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] Extracting URL: https://www.tiktok.com/@ghxstarzz/video/7697861941447970069
+[TikTok] 7697861941447970069: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7697861941447970069: Downloading webpage with challenge cookie
+[info] 7697861941447970069: Downloading 1 format(s): h264_540p_194305-1
+[download] Destination: /storage/emulated/0/Download/.redl.vHiM3y/7697861941447970069.mp4
+[download]   0.2% of  447.20KiB at   49.16KiB/s ETA 00:09[download]   0.7% of  447.20KiB at  131.49KiB/s ETA 00:03[download]   1.6% of  447.20KiB at  283.17KiB/s ETA 00:01[download]   3.4% of  447.20KiB at  563.10KiB/s ETA 00:00[download]   6.9% of  447.20KiB at    1.05MiB/s ETA 00:00[download]  14.1% of  447.20KiB at    1.97MiB/s ETA 00:00[download]  28.4% of  447.20KiB at    3.26MiB/s ETA 00:00[download]  57.0% of  447.20KiB at    3.72MiB/s ETA 00:00[download] 100.0% of  447.20KiB at    4.81MiB/s ETA 00:00[download] 100% of  447.20KiB in 00:00:00 at 1.79MiB/s   
+[2026-10-20 17:53:08] [NORMALIZE]   REDOWNLOAD OK (h264): ghxstarzz_2026-10-18_7697861941447970069 -> ghxstarzz_2026-10-18_7697861941447970069_h264.mp4; bvc2 original removed
+[2026-10-20 17:53:08] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:53:08] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] Extracting URL: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] 7698387067788692758: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698387067788692758: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7698387067788692758: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:53:10] [NORMALIZE]   BVC2 kept: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:53:10] [NORMALIZE] Processing video: 54K views · 3.6K reactions ｜ Zenless Turismo #ZenlessZoneZero ｜ Sunna Aod.mp4
+[2026-10-20 17:53:12] [NORMALIZE]   LUFS: -14.00 -> Applying Constant Linear Gain: 2.00 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/Download/yt-dlp/54K views · 3.6K reactions ｜ Zenless Turismo #ZenlessZoneZero ｜ Sunna Aod.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+  Duration: 00:00:41.80, start: 0.000000, bitrate: 1405 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], 1335 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 66 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/54K_views_3_6K_reactions_Zenless_Turismo_ZenlessZoneZero_Sunna_Aod.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x1280 [SAR 1:1 DAR 9:16], q=2-31, 1335 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007ea348e650] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007e13492770] video:6798KiB audio:992KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.585523%
+frame= 1251 fps=1065 q=-1.0 Lsize=    7836KiB time=00:00:41.68 bitrate=1540.0kbits/s speed=35.5x elapsed=0:00:01.17    
+[aac @ 0xb400007d93492db0] Qavg: 481.062
+[2026-10-20 17:53:14] [NORMALIZE]   SUCCESS: 54K views · 3.6K reactions ｜ Zenless Turismo #ZenlessZoneZero ｜ Sunna Aod.mp4 -> 54K_views_3_6K_reactions_Zenless_Turismo_ZenlessZoneZero_Sunna_Aod.mp4 [8023673 bytes]
+[2026-10-20 17:53:14] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 1, bvc2 kept: 1
+[2026-10-20 17:53:14] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:53:14] [NORMALIZE] Processing video: ghxstarzz_2026-10-18_7697861941447970069_h264.mp4
+[2026-10-20 17:53:16] [NORMALIZE]   LUFS: -31.98 -> Applying Constant Linear Gain: 19.98 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/DCIM/TikTok/ghxstarzz_2026-10-18_7697861941447970069_h264.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dba4p1fog65skcpjcpl0
+    vid_md5         : 69569a963989dfc4a631c0f7106b11eb
+    encoder         : Lavf58.76.100
+  Duration: 00:00:18.85, start: 0.000000, bitrate: 194 kb/s
+  Stream #0:0[0x1](und): Audio: aac (HE-AACv2) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 32 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+  Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], 154 kb/s, 27.24 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+  Stream #0:0 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/ghxstarzz_2026-10-18_7697861941447970069_h264.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    aigc_info       : {"aigc_label_type":0}
+    comment         : vid:v14044g50000dba4p1fog65skcpjcpl0
+    vid_md5         : 69569a963989dfc4a631c0f7106b11eb
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 576x1024 [SAR 1:1 DAR 9:16], q=2-31, 154 kb/s, 27.24 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb400007cd3618d70] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb400007ca36138d0] video:356KiB audio:445KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 2.588738%
+frame=  513 fps=0.0 q=-1.0 Lsize=     821KiB time=00:00:18.85 bitrate= 356.9kbits/s speed=37.3x elapsed=0:00:00.50    
+[aac @ 0xb400007d33614290] Qavg: 459.612
+[2026-10-20 17:53:17] [NORMALIZE]   SUCCESS: ghxstarzz_2026-10-18_7697861941447970069_h264.mp4 -> ghxstarzz_2026-10-18_7697861941447970069_h264.mp4 [840964 bytes]
+[2026-10-20 17:53:17] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:53:17] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 1
+[2026-10-20 17:53:17] [MASTER] ════════════ Session Finished ════════════
+[2026-10-20 17:55:21] [MASTER] ════════════ Session Start ════════════
+[2026-10-20 17:55:21] [MASTER] Checking yt-dlp updates...
+Latest version: stable@2026.08.19 from yt-dlp/yt-dlp
+yt-dlp is up to date (stable@2026.08.19 from yt-dlp/yt-dlp)
+[2026-10-20 17:55:23] [MASTER] yt-dlp update routine finished.
+[2026-10-20 17:55:23] [MASTER] Invoking move_assets.sh...
+[2026-10-20 17:55:23] [ASSETS] Beginning non-video asset scan...
+[2026-10-20 17:55:23] [ASSETS] Asset stage completed. Relocated count: 0
+[2026-10-20 17:55:23] [MASTER] Invoking normalize.sh...
+[2026-10-20 17:55:23] [NORMALIZE] Beginning video normalization stage...
+[2026-10-20 17:55:23] [NORMALIZE] Processing video: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:55:23] [NORMALIZE]   REDOWNLOAD: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] Extracting URL: https://www.tiktok.com/@metabolist/video/7698387067788692758
+[TikTok] 7698387067788692758: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[TikTok] Solving JS challenge using native Python implementation
+[TikTok] 7698387067788692758: Downloading webpage with challenge cookie
+ERROR: [TikTok] 7698387067788692758: Unable to download webpage: HTTP Error 403: Forbidden (caused by <HTTPError 403: Forbidden>)
+[2026-10-20 17:55:25] [NORMALIZE]   BVC2 kept: metabolist_2026-10-19_7698387067788692758.mp4
+[2026-10-20 17:55:25] [NORMALIZE] Processing video: 54K views · 2.5K reactions ｜ Mayano lepas landas. Real (？) jumpscare you #UmaMusume #umameme ｜ Lovelytha Lytha.mp4
+[2026-10-20 17:55:26] [NORMALIZE]   LUFS: -14.56 -> Applying Constant Linear Gain: 2.56 dB
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/storage/emulated/0/Download/yt-dlp/54K views · 2.5K reactions ｜ Mayano lepas landas. Real (？) jumpscare you #UmaMusume #umameme ｜ Lovelytha Lytha.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+  Duration: 00:00:07.80, start: 0.000000, bitrate: 955 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x900, 888 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 71 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (aac (native) -> aac (native))
+Output #0, mp4, to '/storage/emulated/0/Movies/NormalizedVideo/54K_views_2_5K_reactions_Mayano_lepas_landas_Real_jumpscare_you_UmaMusume_umameme_Lovelytha_Lytha.tmp.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf63.1.102
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 720x900, q=2-31, 888 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      encoder         : AVC Coding
+  Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      encoder         : Lavc63.1.102 aac
+      handler_name    : SoundHandler
+[mp4 @ 0xb4000073ce4e7c90] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 0xb40000730e4e4470] video:835KiB audio:183KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.939090%
+frame=  231 fps=0.0 q=-1.0 Lsize=    1027KiB time=00:00:07.68 bitrate=1094.4kbits/s speed=18.6x elapsed=0:00:00.41    
+[aac @ 0xb40000746e4e1150] Qavg: 440.617
+[2026-10-20 17:55:27] [NORMALIZE]   SUCCESS: 54K views · 2.5K reactions ｜ Mayano lepas landas. Real (？) jumpscare you #UmaMusume #umameme ｜ Lovelytha Lytha.mp4 -> 54K_views_2_5K_reactions_Mayano_lepas_landas_Real_jumpscare_you_UmaMusume_umameme_Lovelytha_Lytha.mp4 [1051429 bytes]
+[2026-10-20 17:55:27] [NORMALIZE] Video normalization finished. Success: 1, Fail: 0, Skipped: 0, bvc2 re-downloaded: 0, bvc2 kept: 1
+[2026-10-20 17:55:27] [MASTER] ════════════ Session Finished ════════════

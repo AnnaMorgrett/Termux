@@ -72,7 +72,7 @@ yt-dlp \
     --no-mtime \
     -S "vcodec:h264,res,acodec:m4a" \
     -P "$DL_DIR" \
-    -o "%(title)s.%(ext)s" \
+    -o "%(title).100B [%(id)s].%(ext)s" \
     "$@" \
     "$url"
 

@@ -5,7 +5,7 @@
 #               output integrity verifier, and Android MediaScanner trigger.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.4.0
+#  @version     2.4.2
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -125,7 +125,7 @@ redownload_h264() {
     # Re-fetch the same TikTok video as H.264 via yt-dlp (user + id come from
     # the filename). The bvc2 original is deleted ONLY after the new file is
     # verified (h264/hevc codec + full decode with zero errors).
-    local stem="$1" src="$2" id user url tmpd out vc ferr
+    local stem="$1" src="$2" id user url tmpd out vc ferr ytmsg
     REDL_REASON=""
     # name format: user_YYYY-MM-DD_ID, optionally followed by " (1)" duplicate suffix
     if [[ "$stem" =~ ^(.+)_[0-9]{4}-[0-9]{2}-[0-9]{2}_([0-9]{15,})([[:space:]]*\([0-9]+\))?$ ]]; then
@@ -140,11 +140,21 @@ redownload_h264() {
     tmpd=$(mktemp -d "$SD/Download/.redl.XXXXXX") || return 1
     printf "  ${C_BLUE}[~] Re-downloading as H.264:${C_RESET} %s\n" "$url"
     log "  REDOWNLOAD: $url"
-    yt-dlp --no-mtime -S "vcodec:h264,res,acodec:m4a" \
-           -o "$tmpd/%(id)s.%(ext)s" "$url" </dev/null >> "$LOG" 2>&1
-    out=$(find "$tmpd" -maxdepth 1 -type f -name '*.mp4' | head -1)
+    # H.264 first, HEVC as fallback; never the watermarked "download" format.
+    # Two attempts: TikTok's JS challenge occasionally fails once and works again.
+    local attempt
+    for attempt in 1 2; do
+        yt-dlp --no-mtime -S "vcodec:h264,res,acodec:m4a" \
+               -f "b[vcodec^=h264][format_id!=download]/b[vcodec~='^(h265|hevc)'][format_id!=download]" \
+               -o "$tmpd/%(id)s.%(ext)s" "$url" </dev/null > "$tmpd/yt.log" 2>&1
+        cat "$tmpd/yt.log" >> "$LOG" 2>/dev/null
+        out=$(find "$tmpd" -maxdepth 1 -type f -name '*.mp4' | head -1)
+        [[ -n "$out" ]] && break
+        (( attempt == 1 )) && { printf "  ${C_YELLOW}[~] Retrying once...${C_RESET}\n"; sleep 3; }
+    done
     if [[ -z "$out" ]]; then
-        REDL_REASON="yt-dlp downloaded nothing (see log)"
+        ytmsg=$(grep -E "ERROR|WARNING" "$tmpd/yt.log" | tail -1 | cut -c1-160)
+        REDL_REASON="yt-dlp: ${ytmsg:-no output, no error line}"
         rm -rf "$tmpd"; return 1
     fi
     vc=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
@@ -166,6 +176,7 @@ sanitize_name() {
     local raw_base="${1%.*}"
     local clean
     clean=$(printf '%s' "$raw_base" | LC_ALL=C tr -cs 'A-Za-z0-9_-' '_' | sed 's/^_*//;s/_*$//')
+    clean="${clean:0:120}"; clean="${clean%_}"
     [[ -z "$clean" ]] && clean="video_$(date +%s)"
     printf '%s.mp4' "$clean"
 }
@@ -185,7 +196,7 @@ trap '[[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"; log 
 # ── Execution ─────────────────────────────────────────────────────────────────
 mkdir -p "$VIDEO_OUT" "$(dirname "$LOG")"
 log "Beginning video normalization stage..."
-printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.4.0)${C_RESET}\n"
+printf "${C_BLUE}[*] Scanning for pending videos... (normalize.sh v2.4.2)${C_RESET}\n"
 
 count_ok=0
 count_fail=0
