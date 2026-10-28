@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Media Queue</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--fg:#14171a;--mut:#667;--line:#dde1e6;--acc:#2563eb;--ok:#15803d;--bad:#b91c1c;--warn:#b45309;--run:#7c3aed}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1013;--card:#171a1f;--fg:#e8eaed;--mut:#9aa3ad;--line:#2a2f36;--acc:#60a5fa;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--run:#c4b5fd}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;flex:1}
+.pill{padding:4px 10px;border-radius:99px;font-size:13px;font-weight:600;border:1px solid var(--line)}
+.pill.on{color:var(--run);border-color:var(--run)}.pill.off{color:var(--mut)}
+main{padding:12px 12px calc(84px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 8px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{text-align:center;padding:10px 4px;border-radius:12px;border:1px solid var(--line)}
+.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:var(--mut)}
+.stat.pending b{color:var(--warn)}.stat.running b{color:var(--run)}.stat.done b{color:var(--ok)}.stat.failed b{color:var(--bad)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+button.danger{color:var(--bad)}button:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+textarea,input[type=text],select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+textarea{min-height:110px;resize:vertical}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.chip{flex:none;min-height:38px;padding:0 14px;border-radius:99px}.chip.sel{background:var(--acc);border-color:var(--acc);color:#fff}
+.job{border-top:1px solid var(--line);padding:10px 0}.job:first-child{border-top:0}
+.job .v{word-break:break-all;font-size:14px}.job .m{font-size:12px;color:var(--mut);margin-top:2px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid currentColor;margin-right:6px}
+.badge.pending{color:var(--warn)}.badge.running{color:var(--run)}.badge.done{color:var(--ok)}.badge.failed{color:var(--bad)}
+.err{color:var(--bad);font-size:13px;margin-top:4px}
+.job .row{margin-top:8px}.job button{min-height:38px;flex:none}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;max-height:62vh;overflow:auto}
+label{display:block;font-weight:600;margin-top:12px}.help{font-size:13px;color:var(--mut);margin:2px 0 6px}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;min-height:56px;background:none;color:var(--mut);font-size:13px}
+nav button.sel{color:var(--acc);font-weight:700}
+#toast{position:fixed;left:12px;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));background:#111;color:#fff;padding:12px 14px;border-radius:12px;display:none;z-index:9;font-size:14px}
+.hide{display:none}.mut{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><h1>Media Queue</h1><span id="wpill" class="pill off">worker idle</span></header>
+<main>
+<section id="tab-status">
+  <div class="card"><h2>Queue</h2><div class="grid" id="stats"></div></div>
+  <div class="card"><h2>Now processing</h2><div id="current" class="mut">Nothing running.</div>
+    <div class="row" style="margin-top:10px"><button class="primary" id="bStart">Start worker</button><button id="bStop">Stop after current job</button></div></div>
+  <div class="card"><h2>Add to queue</h2>
+    <textarea id="addbox" placeholder="Paste links (one or more) or full file paths, e.g. /storage/emulated/0/Download/clip.mp4"></textarea>
+    <div class="row" style="margin-top:8px"><button class="primary" id="bAdd">Add &amp; start</button></div><div id="addres" class="help"></div></div>
+</section>
+<section id="tab-queue" class="hide">
+  <div class="chips" id="chips"></div>
+  <div class="card" id="joblist"><span class="mut">Loading…</span></div>
+  <div class="row"><button id="bRetryAll">Retry all failed</button><button id="bClearDone" class="danger">Clear done</button><button id="bClearFailed" class="danger">Clear failed</button></div>
+</section>
+<section id="tab-logs" class="hide">
+  <div class="card"><label style="display:flex;gap:10px;align-items:center;margin:0 0 10px;font-weight:400"><input type="checkbox" id="logev" checked style="width:22px;height:22px"> Pipeline events only (hide ffmpeg output)</label><div class="row" style="margin-bottom:8px"><select id="lognum"><option>100</option><option selected>200</option><option>500</option><option>1000</option></select><button id="bLogRefresh">Refresh</button></div><pre id="logbox">Loading…</pre></div>
+</section>
+<section id="tab-settings" class="hide">
+  <div class="card"><h2>Audio &amp; checks</h2><div id="cfg"></div>
+    <div class="row" style="margin-top:14px"><button class="primary" id="bSave">Save</button><button id="bReset">Reset to defaults</button></div>
+    <div class="help" id="cfgres">Changes apply from the next job.</div></div>
+</section>
+</main>
+<nav id="nav"></nav>
+<div id="toast" role="status"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const TABS=[["status","Status"],["queue","Queue"],["logs","Logs"],["settings","Settings"]];
+let tab="status",filter="",timers=[],cfgLoaded=false;
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e}
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(tt);tt=setTimeout(()=>t.style.display="none",3500)}
+async function api(path,body){
+  const o=body===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"q-ui"},body:JSON.stringify(body)};
+  const r=await fetch(path,o);let j={};try{j=await r.json()}catch(e){}
+  if(!r.ok)throw new Error(j.error||("HTTP "+r.status));return j}
+async function act(fn){try{await fn()}catch(e){toast(e.message)}}
+function ago(s){s=Math.max(0,Math.round(s));if(s<60)return s+"s";if(s<3600)return Math.floor(s/60)+"m "+(s%60)+"s";return Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m"}
+
+function buildNav(){const n=$("nav");TABS.forEach(([k,l])=>{const b=el("button","",l);b.dataset.k=k;b.onclick=()=>show(k);n.appendChild(b)})}
+function show(k){tab=k;TABS.forEach(([t])=>$("tab-"+t).classList.toggle("hide",t!==k));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("sel",b.dataset.k===k));
+  if(k==="settings"&&!cfgLoaded)act(loadCfg);poll()}
+
+async function pStatus(){const s=await api("/api/status");
+  const g=$("stats");g.textContent="";["pending","running","done","failed"].forEach(k=>{const d=el("div","stat "+k);d.appendChild(el("b","",s.stats[k]));d.appendChild(el("span","",k));g.appendChild(d)});
+  const w=$("wpill");w.textContent=s.worker.running?"worker running":"worker idle";w.className="pill "+(s.worker.running?"on":"off");
+  const c=$("current");if(s.current){c.textContent="";c.appendChild(el("div","",s.current.value));c.appendChild(el("div","m mut","job "+s.current.id+" · "+s.current.type+" · running for "+ago(s.now-s.current.since)))}else c.textContent=s.worker.running?"Worker is idle, waiting for jobs.":"Nothing running.";
+  $("bStop").disabled=!s.worker.running;$("bStart").disabled=s.worker.running;
+  const ch=$("chips");if(!ch.children.length){[["","All"],["pending","Pending"],["running","Running"],["failed","Failed"],["done","Done"]].forEach(([k,l])=>{const b=el("button","chip",l);b.dataset.k=k;b.onclick=()=>{filter=k;pJobs()};ch.appendChild(b)})}
+  [...ch.children].forEach(b=>{const k=b.dataset.k;b.textContent=(b.textContent.replace(/ \d+$/,""))+" "+(k===""?s.stats.pending+s.stats.running+s.stats.done+s.stats.failed:s.stats[k])})}
+
+async function pJobs(){[...$("chips").children].forEach(b=>b.classList.toggle("sel",b.dataset.k===filter));
+  const j=await api("/api/jobs"+(filter?"?status="+filter:""));const box=$("joblist");box.textContent="";
+  if(!j.jobs.length){box.appendChild(el("span","mut","No jobs here."));return}
+  j.jobs.forEach(x=>{const d=el("div","job");const top=el("div");top.appendChild(el("span","badge "+x.status,x.status));top.appendChild(el("span","m mut","#"+x.id+" · "+x.type+(x.attempts?" · tries "+x.attempts:"")));d.appendChild(top);
+    d.appendChild(el("div","v",x.value));if(x.args&&x.args.length)d.appendChild(el("div","m mut","options: "+x.args.join(" ")));
+    if(x.error)d.appendChild(el("div","err",x.error));if(x.output)d.appendChild(el("div","m mut","→ "+x.output.split(";").filter(Boolean).join(", ")));
+    const r=el("div","row");
+    if(x.status==="failed"){const b=el("button","","Retry");b.onclick=()=>act(async()=>{await api("/api/retry",{id:x.id});toast("Queued again");poll()});r.appendChild(b)}
+    if(x.status!=="running"){const b=el("button","danger","Remove");b.onclick=()=>act(async()=>{await api("/api/remove",{id:x.id});poll()});r.appendChild(b)}
+    if(r.children.length)d.appendChild(r);box.appendChild(d)})}
+
+async function pLogs(){const j=await api("/api/logs?n="+$("lognum").value+($("logev").checked?"&events=1":""));const p=$("logbox");const atEnd=p.scrollTop+p.clientHeight>=p.scrollHeight-40;
+  p.textContent=j.lines.length?j.lines.join("\n"):"(log is empty)";if(atEnd)p.scrollTop=p.scrollHeight}
+
+async function loadCfg(){const c=await api("/api/config");const box=$("cfg");box.textContent="";
+  Object.keys(c.values).forEach(k=>{box.appendChild(el("label","",k));box.appendChild(el("div","help",c.help[k]+" Default: "+c.defaults[k]+(c.custom.includes(k)?" (changed)":"")));
+    let f;if(c.choices[k]){f=el("select");c.choices[k].forEach(o=>{const op=el("option","",o);op.value=o;f.appendChild(op)})}else{f=el("input");f.type="text";f.inputMode=k==="AUDIO_BITRATE"?"text":"decimal"}
+    f.id="cfg_"+k;f.value=c.values[k];box.appendChild(f);
+    if(k==="PEAK_PERCENT"){const r=el("div","help");r.id="peakdb";box.appendChild(r);const upd=()=>{const p=parseFloat(f.value);r.textContent=(isFinite(p)&&p>=0&&p<=100)?"= target peak "+(-9+8.9*p/100).toFixed(2)+" dB":"enter 0 to 100"};f.oninput=upd;upd()}});cfgLoaded=true}
+function cfgValues(){const v={};document.querySelectorAll("[id^=cfg_]").forEach(f=>v[f.id.slice(4)]=f.value.trim());return v}
+
+function poll(){if(document.hidden)return;act(async()=>{await pStatus();if(tab==="queue")await pJobs();if(tab==="logs")await pLogs()})}
+function schedule(){timers.forEach(clearInterval);timers=[setInterval(poll,3000)]}
+
+$("bStart").onclick=()=>act(async()=>{await api("/api/worker",{action:"start"});toast("Worker started");setTimeout(poll,600)});
+$("bStop").onclick=()=>act(async()=>{await api("/api/worker",{action:"stop"});toast("Will stop after the current job");poll()});
+$("bAdd").onclick=()=>act(async()=>{const t=$("addbox").value;if(!t.trim()){toast("Paste a link or a file path first");return}
+  const r=await api("/api/add",{items:t});const n=r.results.filter(x=>x.ok).length;$("addres").textContent="";
+  r.results.forEach(x=>{const d=el("div","",(x.ok?"✓ ":"• ")+x.msg+" — "+x.item);d.style.color=x.ok?"var(--ok)":"var(--warn)";$("addres").appendChild(d)});
+  if(n)$("addbox").value="";toast(n?n+" queued":"Nothing new was queued");poll()});
+$("bRetryAll").onclick=()=>act(async()=>{await api("/api/retry",{all:true});toast("Failed jobs queued again");poll()});
+$("bClearDone").onclick=()=>act(async()=>{if(confirm("Remove all finished jobs from the list?")){await api("/api/clear",{statuses:["done"]});poll()}});
+$("bClearFailed").onclick=()=>act(async()=>{if(confirm("Remove all failed jobs from the list?")){await api("/api/clear",{statuses:["failed"]});poll()}});
+$("bLogRefresh").onclick=()=>act(pLogs);$("lognum").onchange=()=>act(pLogs);$("logev").onchange=()=>act(pLogs);
+$("bSave").onclick=()=>act(async()=>{await api("/api/config",{values:cfgValues()});await loadCfg();toast("Saved")});
+$("bReset").onclick=()=>act(async()=>{if(confirm("Reset all settings to defaults?")){await api("/api/config",{reset:true});await loadCfg();toast("Defaults restored")}});
+document.addEventListener("visibilitychange",poll);
+buildNav();show("status");schedule();
+</script>
+</body>
+</html>
