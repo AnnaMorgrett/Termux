@@ -27,7 +27,7 @@ q clear [done|failed|all]
 q logs [N]              last N log lines (default 30)
 q ui [start|stop|status|open]  web page for queue, status, logs and settings
 q selftest              check that the queue works on this storage (safe, cleans up)
-q percent [0-100]       show / set the audio peak target (0 = -9.0 dB ... 100 = -0.1 dB)
+q percent [0-100]       show / set the audio sample-peak target (0 = -9.0 dBFS ... 100 = -1.0 dBFS)
 U
 }
 
@@ -136,7 +136,7 @@ import os, sys
 sys.path.insert(0, sys.argv[1]); os.environ.setdefault("QUEUE_DIR", os.path.join(sys.argv[1], "data", "queue"))
 import webui
 cur = webui.read_config().get("PEAK_PERCENT", webui.SCHEMA["PEAK_PERCENT"][0])
-def show(v): print("PEAK_PERCENT = %s%%  ->  target peak %.3f dB   (0%% = -9.0 dB, 50%% = -4.55 dB, 100%% = -0.1 dB)" % (v, -9 + 8.9 * float(v) / 100))
+def show(v): print("PEAK_PERCENT = %s%%  ->  target sample peak %.3f dBFS   (0%% = -9.0 dBFS, 50%% = -5.0 dBFS, 100%% = -1.0 dBFS)" % (v, -9 + 8.0 * float(v) / 100))
 if not sys.argv[2]:
     show(cur)
 else:
