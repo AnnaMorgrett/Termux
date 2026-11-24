@@ -33,6 +33,8 @@ readonly SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
     LOCKFILE="${TMPDIR:-/data/data/com.termux/files/usr/tmp}/media_pipeline.lock"
+    BVC2_BIN="${PREFIX:-/data/data/com.termux/files/usr}/opt/ffmpeg-bvc2/bin"
+    [[ -x "$BVC2_BIN/ffmpeg" && -x "$BVC2_BIN/ffprobe" ]] && export PATH="$BVC2_BIN:$PATH"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
     LOCKFILE="${TMPDIR:-/tmp}/media_pipeline.lock"
@@ -54,8 +56,8 @@ Environment Overrides:
   LOG_MAX_BYTES    Maximum log file size in bytes before rotation (Default: $LOG_MAX)
 
 Options:
-  --percent N      Audio peak target for this run: 0 = -9.0 dB ... 100 = -0.1 dB
-                   (Target dB = -9 + 8.9 x N/100). Saved default: "q percent N".
+  --percent N      Audio sample-peak target for this run: 0 = -9.0 dBFS ... 100 = -1.0 dBFS
+                   (Target dB = -9 + 8.0 x N/100). Saved default: "q percent N".
   -h, --help       Display this documentation.
 EOF
 }
@@ -65,7 +67,7 @@ if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
     exit 0
 fi
 
-# --percent N : audio peak target for THIS run only (0 = -9.0 dB ... 100 = -0.1 dB). Saved default: q percent N
+# --percent N : audio sample-peak target for THIS run only (0 = -9.0 dBFS ... 100 = -1.0 dBFS). Saved default: q percent N
 if [[ "${1:-}" == "--percent" ]]; then
     if ! [[ "${2:-}" =~ ^[0-9]+(\.[0-9]+)?$ ]] || ! awk -v p="${2:-}" 'BEGIN{exit !(p>=0 && p<=100)}'; then
         echo "Usage: tiktok [--percent 0-100]" >&2; exit 64

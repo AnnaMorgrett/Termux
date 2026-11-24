@@ -13,7 +13,7 @@ An automated, cross-platform media ingestion and audio normalization pipeline. B
 
 - **Linear Loudness Normalization (-9 LUFS):** Pure constant linear gain with **zero dynamic range compression (DRC)**. Preserves original dynamic range and transient punch without volume pumping.
 - **Automated Non-Video Asset Relocation:** Automatically detects image, sticker, and animation assets (`.jpg`, `.png`, `.gif`, `.webp`, `.heic`, `.svg`), relocates them safely to an asset library with collision prevention, and syncs them to Android's native MediaStore.
-- **Codec-Aware Stream Optimization:** Bitstream copies compatible H.264/HEVC/MPEG-4 streams (`-c:v copy`) to eliminate generational quality loss and speed up processing.
+- **Codec-Aware Stream Optimization:** Bitstream copies compatible H.264/HEVC/MPEG-4 streams (`-c:v copy`). On Android, the installer fetches your GitHub Actions-built FFmpeg with native ByteVC2 decoding and transcodes ByteVC2 videos to H.264 for broad player compatibility.
 - **Fail-Safe Ingestion:** Downloads and processed videos are verified for container validity and non-zero duration via `ffprobe` before the original raw file is deleted.
 - **Rolling Debug Log:** Automated log rotation enforcing a strict 2MB maximum limit, recycling oldest data to prevent device storage bloat.
 - **Single-Instance Process Guard:** Prevents concurrency race conditions using `flock` and atomic directory locks.
@@ -60,6 +60,8 @@ flowchart TD
 ## ⚡ 1-Click Installation
 
 ### Option A: Mobile (Android Termux)
+The installer fetches and validates the latest Android ARM64 `ffmpeg-bvc2` release from [AnnaMorgrett/ffmpeg-bvc2](https://github.com/AnnaMorgrett/ffmpeg-bvc2). It installs separately under `$PREFIX/opt/ffmpeg-bvc2`, without overwriting package-managed FFmpeg. The release asset is checked on each installer run and downloaded only when it changes. If GitHub is unavailable or validation fails, an existing custom build is retained and system FFmpeg remains the fallback.
+
 Run this single command inside your Termux terminal:
 
 ```bash
