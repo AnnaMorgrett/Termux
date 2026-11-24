@@ -52,8 +52,8 @@ readonly INPUT_DIRS=(
 readonly VIDEO_OUT="$SD/Movies/NormalizedVideo"
 readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/media_processor_log.txt"
 
-# NORM_MODE=peak (default): percentage scale. 0% = -9.0 dB peak ... 100% = -0.1 dB peak
-#   Target_dB = -9 + 8.9 * (PEAK_PERCENT / 100). Constant gain so the audio PEAK lands exactly on it.
+# NORM_MODE=peak (default): percentage scale. 0% = -9.0 dBFS sample peak ... 100% = -1.0 dBFS sample peak
+#   Target_dB = -9 + 8.0 * (PEAK_PERCENT / 100). Constant gain so the audio sample peak lands exactly on it.
 #   FORCED on every file with audio: no audio copy, no audio stripping, no skipping the filter.
 # NORM_MODE=lufs: the older loudness mode (TARGET_LUFS + TRUE_PEAK_CEILING cap).
 readonly NORM_MODE="${NORM_MODE:-peak}"
@@ -84,8 +84,8 @@ fi
 if ! [[ "$PEAK_FALLBACK_TOLERANCE" =~ ^[0-9]+(\.[0-9]+)?$ ]] || ! awk -v t="$PEAK_FALLBACK_TOLERANCE" 'BEGIN{exit !(t>=0 && t<=1)}'; then
     echo "[FATAL] PEAK_FALLBACK_TOLERANCE must be 0 to 1 dB (got '$PEAK_FALLBACK_TOLERANCE')" >&2; exit 64
 fi
-# Percentage -> dB, linear: 0% = -9.000, 50% = -4.550, 100% = -0.100
-TARGET_PEAK_DB=$(awk -v p="$PEAK_PERCENT" 'BEGIN{printf "%.3f", -9 + 8.9 * (p / 100)}')
+# Percentage -> dB, linear: 0% = -9.000, 50% = -5.000, 100% = -1.000
+TARGET_PEAK_DB=$(awk -v p="$PEAK_PERCENT" 'BEGIN{printf "%.3f", -9 + 8.0 * (p / 100)}')
 readonly TARGET_PEAK_DB
 
 CURRENT_TMP=""
@@ -105,10 +105,11 @@ Usage: normalize.sh [--file PATH [--keep-original]] [-h]
 
 Audio normalization is applied to EVERY file that has audio (it cannot be skipped).
 Default mode "peak": PEAK_PERCENT (0-100) sets the target audio peak linearly:
-  0% = -9.0 dB   50% = -4.55 dB   100% = -0.1 dB      (Target_dB = -9 + 8.9 * percent/100)
+  0% = -9.0 dBFS   50% = -5.0 dBFS   100% = -1.0 dBFS (Target_dB = -9 + 8.0 * percent/100)
 Constant linear gain scales the audio so its peak lands on that target (no compression).
 Current setting: ${PEAK_PERCENT}% = ${TARGET_PEAK_DB} dB, mode ${NORM_MODE}.
 Mode "lufs" (NORM_MODE=lufs): constant gain to ${TARGET_LUFS} LUFS, capped at ${TRUE_PEAK_CEILING} dBTP.
+Peak mode controls decoded sample peak (dBFS), not inter-sample true peak (dBTP).
 Video is stream-copied when possible; re-encoded only as a verified last resort.
 The original is deleted only after the output is verified and saved.
 
@@ -123,7 +124,7 @@ Supported Formats:
 
 Environment Overrides:
   NORM_MODE           peak (default) or lufs
-  PEAK_PERCENT        0-100, target peak scale for mode peak (Default: 100)
+  PEAK_PERCENT        0-100, target sample peak scale for mode peak (Default: 100 = -1.0 dBFS)
   PEAK_TOLERANCE      accepted error of the output's real peak, in dB (Default: 0.05)
   PEAK_FALLBACK_TOLERANCE  if AAC makes that impossible, accept the best try up to this far
                       below target (never more than 0.10 dB above); 0 = strict only (Default: 0.30)
