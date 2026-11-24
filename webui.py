@@ -27,7 +27,7 @@ MAX_BODY = 64 * 1024
 # key -> (default, kind, help, extra)
 SCHEMA = {
     "NORM_MODE":         ("peak", "enum", "peak = audio peak set by the percentage below (forced on every file). lufs = loudness target.", ("peak", "lufs")),
-    "PEAK_PERCENT":      ("100",  "pct",  "Peak mode: 0 = -9.0 dB, 50 = -4.55 dB, 100 = -0.1 dB (Target dB = -9 + 8.9 x percent/100).", (0.0, 100.0)),
+    "PEAK_PERCENT":      ("100",  "pct",  "Peak mode sample-peak target: 0 = -9.0 dBFS, 50 = -5.0 dBFS, 100 = -1.0 dBFS (Target dB = -9 + 8.0 x percent/100).", (0.0, 100.0)),
     "TARGET_LUFS":       ("-9",   "num",  "Target loudness (LUFS). Constant gain only, no compression.", (-40.0, 0.0)),
     "TRUE_PEAK_CEILING": ("-1.0", "num",  "Highest allowed true peak (dBTP). Gain is reduced to stay under it.", (-20.0, 0.0)),
     "VERIFY_DECODE":     ("1",    "enum", "Decode the output audio once to check it (1 = yes, 0 = no).", ("0", "1")),
