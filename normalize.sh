@@ -365,6 +365,16 @@ compute_gain_peak() {
 # The gain is ALWAYS applied; nothing here can skip or bypass the filter.
 # Sets GAIN_DB, CAL_BITRATE, CAL_PEAK and the accepted error window PEAK_ERR_LO..PEAK_ERR_HI (error = target - peak).
 # Returns 1 only if nothing inside even the fallback window was found.
+audio_gain_filter() {  # maps 2ch (including broken LFE+LFE2 tags) to stereo before volume
+    local src="$1" gain="$2" ch
+    ch=$(ffprobe -v error -select_streams a:0 -show_entries stream=channels -of csv=p=0 "$src" </dev/null 2>/dev/null | head -1 | tr -cd '0-9')
+    if [[ "$ch" == "2" ]]; then
+        printf 'channelmap=0|1:stereo,volume=%sdB' "$gain"
+    else
+        printf 'volume=%sdB' "$gain"
+    fi
+}
+
 calibrate_peak() {
     local src="$1" cal="$TMP_DIR/.cal.$$.mp4" br k rc pk err derr aerr g best_g="$GAIN_DB" bbest bbest_g i tries=0
     local fb_err=999 fb_g="" fb_br="" fb_pk="" fb_e=""
@@ -382,7 +392,7 @@ calibrate_peak() {
             (( ++k, ++tries ))
             rm -f "$cal"
             ffmpeg -hide_banner -nostdin -nostats -loglevel "$FFMPEG_LOGLEVEL" -y -i "$src" -vn -map 0:a:0 \
-                   -af "volume=${g}dB" -c:a aac -b:a "$br" -f mp4 "$cal" </dev/null 2>>"$LOG" &
+                   -af "$(audio_gain_filter "$src" "$g")" -c:a aac -b:a "$br" -f mp4 "$cal" </dev/null 2>>"$LOG" &
             FF_PID=$!; wait "$FF_PID"; rc=$?; FF_PID=""
             if (( rc != 0 )); then log "  CALIBRATE: audio trial encode failed (gain ${g} dB, ${br})"; rm -f "$cal"; CURRENT_CAL=""; return 1; fi
             pk=$(peak_db "$cal")
@@ -427,7 +437,7 @@ run_ffmpeg() {
         *)    va=(-c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -fps_mode passthrough) ;;
     esac
     case "$amode" in
-        gain)  aa=(-map 0:a:0 -af "volume=${gain}dB" -c:a aac -b:a "${CAL_BITRATE:-$AUDIO_BITRATE}") ;;
+        gain)  aa=(-map 0:a:0 -af "$(audio_gain_filter "$src" "$gain")" -c:a aac -b:a "${CAL_BITRATE:-$AUDIO_BITRATE}") ;;
         acopy) aa=(-map 0:a:0 -c:a copy) ;;
         *)     aa=(-an) ;;
     esac

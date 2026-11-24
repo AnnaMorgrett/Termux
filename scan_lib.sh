@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 # scan_lib.sh - shared Android media-scan helper (source it; do not run).
-# scan_queue FILE: scans every existing path listed in FILE in ONE batch, oldest first.
+# scan_queue FILE: scans every existing path listed in FILE in ONE batch, newest first.
 # Needs C_GREEN/C_YELLOW/C_RESET (optional; empty is fine).
 scan_queue() {
-    # Scan every queued file in ONE call (deduped, existing files only).
-    local qf="$1" f out rc=1 i
+    # Scan every queued file in ONE call (deduped, existing files only, newest mtime first).
+    local qf="$1" f mtime out rc=1 i
     local -a files=() chunk=()
     [[ -s "$qf" ]] || return 0
     while IFS= read -r f; do
         [[ -f "$f" ]] && files+=("$f")
     done < <(sort -u "$qf" | while IFS= read -r q; do
-                [[ -f "$q" ]] && printf '%s\t%s\n' "$(stat -c %Y "$q" 2>/dev/null || echo 0)" "$q"
-             done | sort -t "$(printf '\t')" -k1,1n -s | cut -f2-)
+                if [[ -f "$q" ]]; then
+                    mtime=$(stat -c '%.Y' "$q" 2>/dev/null || stat -c '%Y' "$q" 2>/dev/null || echo 0)
+                    printf '%s\t%s\n' "$mtime" "$q"
+                fi
+             done | sort -t $'\t' -k1,1nr | cut -f2-)
     (( ${#files[@]} > 0 )) || return 0
     if command -v termux-media-scan &>/dev/null; then
         rc=0
