@@ -31,6 +31,8 @@ fi
 # ── Environment & Config ──────────────────────────────────────────────────────
 if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
+    BVC2_BIN="${PREFIX:-/data/data/com.termux/files/usr}/opt/ffmpeg-bvc2/bin"
+    [[ -x "$BVC2_BIN/ffmpeg" && -x "$BVC2_BIN/ffprobe" ]] && export PATH="$BVC2_BIN:$PATH"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
 fi
@@ -514,7 +516,7 @@ process_file() {
         CURRENT_TMP=""; return 2
     fi
 
-    if [[ -z "$vcodec" || "$vcodec" == "none" || "$vcodec" == "unknown" || "$vtag" == bvc* ]]; then
+    if [[ -z "$vcodec" || "$vcodec" == "none" || "$vcodec" == "unknown" ]] || { [[ "$vtag" == bvc* ]] && [[ "$vcodec" != "bvc2" ]]; }; then
         CURRENT_TMP=""
         if [[ -n "${NORMALIZE_PASS2:-}" || "$KEEP_ORIGINAL" == "1" ]]; then return 3; fi
         printf "  ${C_YELLOW}[bvc2] ByteVC2 video - not playable by most players.${C_RESET}\n"
@@ -532,6 +534,7 @@ process_file() {
 
     case "$vcodec" in
         h264|hevc|mpeg4) vprimary="copy" ;;
+        bvc2)            vprimary="enc"; printf "  ${C_GREEN}[BVC2] Native ByteVC2 decode via custom FFmpeg; converting video to H.264.${C_RESET}\n" ;;
         *)               vprimary="enc"  ;;
     esac
 
