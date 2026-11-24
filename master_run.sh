@@ -33,6 +33,8 @@ readonly SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -d "/data/data/com.termux" || -n "${TERMUX_VERSION:-}" ]]; then
     SD="${MEDIA_DIR:-/storage/emulated/0}"
     LOCKFILE="${TMPDIR:-/data/data/com.termux/files/usr/tmp}/media_pipeline.lock"
+    BVC2_BIN="${PREFIX:-/data/data/com.termux/files/usr}/opt/ffmpeg-bvc2/bin"
+    [[ -x "$BVC2_BIN/ffmpeg" && -x "$BVC2_BIN/ffprobe" ]] && export PATH="$BVC2_BIN:$PATH"
 else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
     LOCKFILE="${TMPDIR:-/tmp}/media_pipeline.lock"
