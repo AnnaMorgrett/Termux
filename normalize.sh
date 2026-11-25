@@ -332,6 +332,8 @@ compute_gain() {
     MEASURED_I=$(printf '%s' "$stats" | grep '"input_i"' | head -1 | sed 's/.*: *"//;s/".*//')
     tp=$(printf '%s' "$stats" | grep '"input_tp"' | head -1 | sed 's/.*: *"//;s/".*//')
     MEASURED_TP="$tp"
+    awk -v i="$MEASURED_I" -v f="${SILENCE_FLOOR_DB:--60}" 'BEGIN{exit !(i < f)}' && { log "  LUFS: ${MEASURED_I} is below the silence floor (${SILENCE_FLOOR_DB:--60}); no gain"; return 0; }
+    if is_num "$MEASURED_I" && awk -v i="$MEASURED_I" -v b="${NOISE_CHECK_LUFS:--40}" 'BEGIN{exit !(i < b)}' && audio_is_noise_only "$src"; then log "  LUFS: quiet audio (${MEASURED_I} LUFS) is noise only: ${NOISE_WHY}; no gain"; return 0; fi
     is_num "$MEASURED_I" || return 0            # silent/unmeasurable -> 0 dB
     if is_num "$tp"; then
         read -r GAIN_DB GAIN_CAPPED < <(awk -v t="$TARGET_LUFS" -v i="$MEASURED_I" -v tp="$tp" -v c="$TRUE_PEAK_CEILING" \
@@ -349,9 +351,39 @@ peak_db() {
 }
 
 # Sets PEAK_SRC, PEAK_SILENT, GAIN_DB (3 decimals). Returns 1 if the audio cannot be measured.
+# Noise-only detector for QUIET audio. Returns 0 if the track is steady noise/hiss (no real sound), else 1.
+# Songs, voices and ambience vary by several dB over time and have energy below 4 kHz; hiss does not.
+# Tunables: NOISE_VAR_DB (default 1.0), NOISE_BAND_GAP_DB (default 25). Sets NOISE_WHY.
+_mean_vol() { ffmpeg -hide_banner -nostdin -nostats -i "$1" -vn -map 0:a:0 -af "${2}volumedetect" -f null - </dev/null 2>&1 | awk '/mean_volume:/ {print $(NF-1); exit}'; }
+audio_is_noise_only() {
+    local sd full low
+    NOISE_WHY=""
+    sd=$(ffmpeg -hide_banner -nostdin -nostats -v quiet -i "$1" -vn -map 0:a:0 \
+        -af "asetnsamples=n=4096:p=0,astats=metadata=1:reset=1,ametadata=print:key=lavfi.astats.Overall.RMS_level:file=-" \
+        -f null - </dev/null 2>/dev/null |
+        awk -F= '/RMS_level=/ && $2 !~ /inf/ {v=$2+0; n++; s+=v; q+=v*v}
+                 END { if (n < 5) exit; m=s/n; d=q/n-m*m; if (d<0) d=0; printf "%.2f", sqrt(d) }')
+    if is_num "$sd" && awk -v s="$sd" -v t="${NOISE_VAR_DB:-1.0}" 'BEGIN{exit !(s < t)}'; then
+        NOISE_WHY="steady level (variation ${sd} dB)"; return 0
+    fi
+    full=$(_mean_vol "$1"); low=$(_mean_vol "$1" "lowpass=f=4000,")
+    if is_num "$full" && is_num "$low" && awk -v f="$full" -v l="$low" -v g="${NOISE_BAND_GAP_DB:-25}" 'BEGIN{exit !(f - l > g)}'; then
+        NOISE_WHY="no energy below 4 kHz (full ${full} dB, low band ${low} dB)"; return 0
+    fi
+    return 1
+}
+
 compute_gain_peak() {
     PEAK_SRC=$(peak_db "$1"); PEAK_SILENT=0; GAIN_DB="0.000"; CAL_BITRATE=""
     if [[ "$PEAK_SRC" == "-inf" ]]; then PEAK_SILENT=1; return 0; fi
+    if is_num "$PEAK_SRC" && awk -v p="$PEAK_SRC" -v f="${SILENCE_FLOOR_DB:--60}" 'BEGIN{exit !(p < f)}'; then
+        log "  PEAK: ${PEAK_SRC} dB is below the silence floor (${SILENCE_FLOOR_DB:--60} dB); treating as silence, no gain"
+        PEAK_SILENT=1; return 0
+    fi
+    if is_num "$PEAK_SRC" && awk -v p="$PEAK_SRC" -v b="${NOISE_CHECK_BELOW_DB:--30}" 'BEGIN{exit !(p < b)}' && audio_is_noise_only "$1"; then
+        log "  PEAK: quiet audio (${PEAK_SRC} dB) is noise only: ${NOISE_WHY}; no gain"
+        PEAK_SILENT=1; return 0
+    fi
     is_num "$PEAK_SRC" || return 1
     GAIN_DB=$(awk -v t="$TARGET_PEAK_DB" -v p="$PEAK_SRC" 'BEGIN{printf "%.3f", t - p}')
 }
