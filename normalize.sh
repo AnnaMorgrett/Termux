@@ -715,6 +715,16 @@ done
 log "Video normalization finished. Success: $count_ok, Fail: $count_fail, Skipped: $count_skip, bvc2 re-downloaded: $count_bvc2, bvc2 kept: $count_unsup"
 printf "${C_GREEN}[✓] Summary: Videos OK=%d, Failed=%d, Skipped=%d, bvc2 redownloaded=%d, bvc2 kept=%d${C_RESET}\n" "$count_ok" "$count_fail" "$count_skip" "$count_bvc2" "$count_unsup"
 
+# Rescan input folders to drop stale MediaStore entries from deleted files
+for _rescan_dir in "${INPUT_DIRS[@]}"; do
+    [[ -d "$_rescan_dir" ]] || continue
+    if command -v termux-media-scan &>/dev/null; then
+        termux-media-scan "$_rescan_dir" </dev/null >/dev/null 2>&1 || true
+    elif command -v am &>/dev/null; then
+        am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d "file://$_rescan_dir" </dev/null >/dev/null 2>&1 || true
+    fi
+done
+
 if (( SCAN_OWNER == 1 )); then
     scan_queue "$SCAN_QUEUE"
     rm -f "$SCAN_QUEUE"

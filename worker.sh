@@ -68,7 +68,7 @@ fi
 
 CHILD=""; CUR_ID=""; WAKE=0
 declare -A RUNNING=()
-JOBS_MAX="${WORKER_JOBS:-2}"; [[ "$JOBS_MAX" =~ ^[1-9][0-9]*$ ]] || JOBS_MAX=2
+JOBS_MAX="${WORKER_JOBS:-8}"; [[ "$JOBS_MAX" =~ ^[1-9][0-9]*$ ]] || JOBS_MAX=8
 # keep the CPU awake while working (Termux only; harmless if missing)
 wake_on()  { command -v termux-wake-lock &>/dev/null && termux-wake-lock 2>/dev/null && WAKE=1; return 0; }
 wake_off() { (( WAKE )) && termux-wake-unlock 2>/dev/null; WAKE=0; return 0; }
