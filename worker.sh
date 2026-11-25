@@ -51,8 +51,10 @@ fi
 acquire_lock() {
     local owner
     if mkdir "$LOCK" 2>/dev/null; then echo $$ > "$LOCK/pid"; return 0; fi
+    [[ -f "$LOCK/pid" ]] || sleep 0.1
     owner=$(cat "$LOCK/pid" 2>/dev/null || true)
     if [[ -n "$owner" ]] && kill -0 "$owner" 2>/dev/null; then return 1; fi
+    if [[ -z "$owner" ]] && (( $(date +%s) - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) < 5 )); then return 1; fi
     log "Stale worker lock (pid ${owner:-?}) removed"
     rm -rf "$LOCK"
     mkdir "$LOCK" 2>/dev/null && echo $$ > "$LOCK/pid"
@@ -65,10 +67,19 @@ if ! acquire_lock; then
 fi
 
 CHILD=""; CUR_ID=""; WAKE=0
+declare -A RUNNING=()
+JOBS_MAX="${WORKER_JOBS:-2}"; [[ "$JOBS_MAX" =~ ^[1-9][0-9]*$ ]] || JOBS_MAX=2
 # keep the CPU awake while working (Termux only; harmless if missing)
 wake_on()  { command -v termux-wake-lock &>/dev/null && termux-wake-lock 2>/dev/null && WAKE=1; return 0; }
 wake_off() { (( WAKE )) && termux-wake-unlock 2>/dev/null; WAKE=0; return 0; }
 on_signal() {
+    local _id
+    for _id in "${!RUNNING[@]}"; do kill "${RUNNING[$_id]}" 2>/dev/null; done
+    for _id in "${!RUNNING[@]}"; do
+        wait "${RUNNING[$_id]}" 2>/dev/null
+        qctl requeue "$_id" >/dev/null 2>&1; log "Interrupted; job $_id put back in the queue"
+        rm -f "$QUEUE_DIR/.jr.$_id" "$QUEUE_DIR/.jo.$_id"
+    done
     [[ -n "$CHILD" ]] && kill "$CHILD" 2>/dev/null && wait "$CHILD" 2>/dev/null
     if [[ -n "$CUR_ID" ]]; then qctl requeue "$CUR_ID" >/dev/null 2>&1; log "Interrupted; job $CUR_ID put back in the queue"; fi
     (( SCAN_OWN )) && { scan_queue "$SCANQ"; rm -f "$SCANQ"; }
@@ -120,6 +131,43 @@ process_job() {   # process_job ID TYPE KEEP VALUE ARGS -> 0 = done, 1 = failed 
     JOB_ERR="${errs%; }"; return 1
 }
 
+# ── Parallel job runner ───────────────────────────────────────────────────────
+# WORKER_JOBS jobs run at once (default 4; 1 = one at a time). Each job runs in its own subshell and only the
+# parent talks to the queue (qctl done/fail), so the queue files are never written concurrently.
+run_job_bg() {   # run_job_bg ID TYPE KEEP VALUE ARGS BUFFERED(0/1)
+    local id="$1" type="$2" keep="$3" value="$4" jargs="$5" buf="$6" jrc
+    (
+        trap - EXIT
+        trap '[[ -n "$CHILD" ]] && kill "$CHILD" 2>/dev/null; exit 143' INT TERM HUP
+        (( buf )) && exec >"$QUEUE_DIR/.jo.$id" 2>&1
+        CUR_ID=""
+        if process_job "$id" "$type" "$keep" "$value" "$jargs"; then jrc=0; else jrc=1; fi
+        printf '%s\n%s\n%s\n' "$jrc" "$JOB_OUT" "$JOB_ERR" > "$QUEUE_DIR/.jr.$id.tmp" && mv -f "$QUEUE_DIR/.jr.$id.tmp" "$QUEUE_DIR/.jr.$id"
+    ) &
+    RUNNING[$id]=$!
+}
+
+reap_jobs() {   # collect finished jobs, report them, tell the queue
+    local id pid res rc out err
+    for id in "${!RUNNING[@]}"; do
+        pid="${RUNNING[$id]}"; res="$QUEUE_DIR/.jr.$id"
+        if [[ ! -f "$res" ]] && kill -0 "$pid" 2>/dev/null; then continue; fi     # still running
+        wait "$pid" 2>/dev/null
+        rc=1; out=""; err="job process ended without a result"
+        if [[ -f "$res" ]]; then { IFS= read -r rc; IFS= read -r out; IFS= read -r err; } < "$res"; rm -f "$res"; fi
+        unset 'RUNNING[$id]'
+        if [[ -f "$QUEUE_DIR/.jo.$id" ]]; then cat "$QUEUE_DIR/.jo.$id"; rm -f "$QUEUE_DIR/.jo.$id"; fi
+        if [[ "$rc" == "0" ]]; then
+            qctl done "$id" --output "$out" >/dev/null; (( ++ok )); log "Job $id DONE"
+            printf "${C_GREEN}[job %s] done${C_RESET}\n" "$id"
+        else
+            qctl fail "$id" "$err" >/dev/null; (( ++failed )); log "Job $id FAILED: $err"
+            printf "${C_RED}[job %s] failed: %s${C_RESET}\n" "$id" "$err" >&2
+        fi
+    done
+    return 0
+}
+
 # ── Main loop ─────────────────────────────────────────────────────────────────
 trim_log
 log "════════ Worker start (pid $$) ════════"
@@ -138,24 +186,25 @@ ok=0; failed=0; QUEUE_ERR=0
 while :; do
     stopped=0
     while :; do
-        if [[ -f "$QUEUE_DIR/.stop" ]]; then rm -f "$QUEUE_DIR/.stop"; log "Stop requested"; printf "${C_YELLOW}[!] Stopped by request.${C_RESET}\n"; stopped=1; break; fi
-        line=$(qctl next 2>&1); nrc=$?
-        if (( nrc == 1 )); then break                                   # queue empty
-        elif (( nrc != 0 )); then                                       # queue broken: say so, do not pretend we finished
-            printf "${C_RED}[ERROR] Queue problem: %s${C_RESET}\n" "$line" >&2; log "ERROR: queue problem: $line"; QUEUE_ERR=1; break
-        fi
-        IFS=$'\t' read -r id type keep value jargs <<< "$line"
-        CUR_ID="$id"
-        printf "${C_BLUE}[job %s]${C_RESET} %s %s\n" "$id" "$type" "$value"
-        log "Job $id start: $type $value"
-        if process_job "$id" "$type" "$keep" "$value" "${jargs:-}"; then
-            qctl done "$id" --output "$JOB_OUT" >/dev/null; (( ++ok )); log "Job $id DONE"
-            printf "${C_GREEN}[job %s] done${C_RESET}\n" "$id"
-        else
-            qctl fail "$id" "$JOB_ERR" >/dev/null; (( ++failed )); log "Job $id FAILED: $JOB_ERR"
-            printf "${C_RED}[job %s] failed: %s${C_RESET}\n" "$id" "$JOB_ERR" >&2
-        fi
-        CUR_ID=""
+        # fill every free slot from the queue
+        while (( ! stopped && ${#RUNNING[@]} < JOBS_MAX )); do
+            if [[ -f "$QUEUE_DIR/.stop" ]]; then rm -f "$QUEUE_DIR/.stop"; log "Stop requested"; printf "${C_YELLOW}[!] Stopped by request.${C_RESET}\n"; stopped=1; break; fi
+            line=$(qctl next --max-running "$JOBS_MAX" 2>&1); nrc=$?
+            if (( nrc == 1 )); then break                                   # queue empty
+            elif (( nrc != 0 )); then                                       # queue broken: say so, do not pretend we finished
+                printf "${C_RED}[ERROR] Queue problem: %s${C_RESET}\n" "$line" >&2; log "ERROR: queue problem: $line"; QUEUE_ERR=1; stopped=1; break
+            fi
+            IFS=$'\t' read -r id type keep value jargs <<< "$line"
+            printf "${C_BLUE}[job %s]${C_RESET} %s %s\n" "$id" "$type" "$value"
+            log "Job $id start: $type $value"
+            st=$(qctl stats 2>/dev/null); pend=${st#pending=}; pend=${pend%% *}
+            buf=0
+            if (( JOBS_MAX > 1 )) && [[ "$pend" =~ ^[0-9]+$ ]] && (( pend > 0 || ${#RUNNING[@]} > 0 )); then buf=1; fi
+            run_job_bg "$id" "$type" "$keep" "$value" "${jargs:-}" "$buf"
+        done
+        (( ${#RUNNING[@]} == 0 )) && break
+        wait -n 2>/dev/null || sleep 0.2
+        reap_jobs
     done
     (( SCAN_OWN )) && { scan_queue "$SCANQ"; rm -f "$SCANQ"; }    # ONE media scan per drain, while we still hold the lock
     (( stopped )) && break

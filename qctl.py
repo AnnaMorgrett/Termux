@@ -235,11 +235,12 @@ def cmd_add(a):
 
 
 def cmd_next(a):
+    limit = max(1, getattr(a, "max_running", 1))
     with Locked():
-        for j in load_all():
-            if j["status"] == "running":     # one at a time: never hand out a second job
-                sys.exit(1)
-        for j in load_all():
+        jobs = load_all()
+        if sum(1 for j in jobs if j["status"] == "running") >= limit:
+            sys.exit(1)
+        for j in jobs:
             if j["status"] == "pending":
                 j.update(status="running", attempts=j["attempts"] + 1, updated=now())
                 write_job(j)
@@ -247,6 +248,18 @@ def cmd_next(a):
                                               "\x1f".join(j.get("args", []))))
                 return
     sys.exit(1)
+
+
+def cmd_wait(a):
+    while True:
+        found = next((j for j in load_all(repair=False) if j["id"] == a.id), None)
+        if found is None:
+            die("job %d removed before completion" % a.id, 1)
+        if found["status"] == "done":
+            sys.exit(0)
+        if found["status"] == "failed":
+            die("job %d failed: %s" % (a.id, found.get("error") or "failed"), 1)
+        time.sleep(0.35)
 
 
 def _get(i):
@@ -423,7 +436,8 @@ def main():
     g.add_argument("--url"); g.add_argument("--file"); x.add_argument("--force", action="store_true")
     x.add_argument("--consume", action="store_true", help="file jobs: delete the original after a verified output")
     x.add_argument("--arg", action="append", help="extra yt-dlp option (repeatable, URL jobs only)"); x.set_defaults(f=cmd_add)
-    s.add_parser("next").set_defaults(f=cmd_next)
+    x = s.add_parser("next"); x.add_argument("--max-running", type=int, default=1); x.set_defaults(f=cmd_next)
+    x = s.add_parser("wait"); x.add_argument("id", type=int); x.set_defaults(f=cmd_wait)
     x = s.add_parser("done"); x.add_argument("id", type=int); x.add_argument("--output"); x.set_defaults(f=cmd_done)
     x = s.add_parser("fail"); x.add_argument("id", type=int); x.add_argument("message", nargs="?"); x.set_defaults(f=cmd_fail)
     x = s.add_parser("requeue"); x.add_argument("id", type=int); x.set_defaults(f=cmd_requeue)

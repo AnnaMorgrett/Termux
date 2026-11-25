@@ -159,43 +159,14 @@ log() {
 
 # ── Deferred media scan: queue now, scan once at the end ─────────────────────
 if [[ -n "${MEDIA_SCAN_QUEUE:-}" ]]; then
-    SCAN_QUEUE="$MEDIA_SCAN_QUEUE"; SCAN_OWNER=0   # master_run scans at the very end
+    SCAN_QUEUE="$MEDIA_SCAN_QUEUE"; SCAN_OWNER=0
 else
-    SCAN_QUEUE="$(mktemp)"; SCAN_OWNER=1           # standalone run: scan at our end
+    SCAN_QUEUE="$(mktemp)"; SCAN_OWNER=1
 fi
-queue_scan() { printf '%s\n' "$1" >> "$SCAN_QUEUE"; }
-scan_queue() {
-    # Scan every queued file in ONE call (deduped, existing files only).
-    local qf="$1" f out rc=1 i
-    local -a files=() chunk=()
-    [[ -s "$qf" ]] || return 0
-    while IFS= read -r f; do
-        [[ -f "$f" ]] && files+=("$f")
-    done < <(sort -u "$qf" | while IFS= read -r q; do
-                [[ -f "$q" ]] && printf '%s\t%s\n' "$(stat -c %Y "$q" 2>/dev/null || echo 0)" "$q"
-             done | sort -t "$(printf '\t')" -k1,1n -s | cut -f2-)
-    (( ${#files[@]} > 0 )) || return 0
-    if command -v termux-media-scan &>/dev/null; then
-        rc=0
-        for (( i=0; i<${#files[@]}; i+=50 )); do
-            chunk=("${files[@]:i:50}")
-            out=$(termux-media-scan "${chunk[@]}" </dev/null 2>&1) || rc=$?
-        done
-    elif command -v am &>/dev/null; then
-        rc=0
-        for f in "${files[@]}"; do
-            am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
-               -d "file://$f" </dev/null >/dev/null 2>&1 || rc=$?
-        done
-    else
-        out="no termux-media-scan or am found"
-    fi
-    if (( rc == 0 )); then
-        printf "${C_GREEN}[✓] Media scan:${C_RESET} %d file(s) added to gallery\n" "${#files[@]}"
-    else
-        printf "${C_YELLOW}[!] Media scan failed (install Termux:API app + 'pkg install termux-api'): %s${C_RESET}\n" "${out:-}" >&2
-    fi
-}
+queue_scan() { printf '%s
+' "$1" >> "$SCAN_QUEUE"; }
+# shellcheck source=scan_lib.sh
+source "$_NORM_DIR/scan_lib.sh"
 
 
 redownload_h264() {
@@ -284,10 +255,10 @@ kv() {  # kv "a=1|b=2" b  -> 2
     printf '%s' "${s%%|*}"
 }
 
-# One ffprobe call -> V_COUNT V_CODEC V_TAG A_CODEC
+# One ffprobe call -> V_COUNT V_CODEC V_TAG A_CODEC A_CHANNELS
 probe_streams() {
     local line ct
-    V_COUNT=0; V_CODEC=""; V_TAG=""; A_CODEC=""
+    V_COUNT=0; V_CODEC=""; V_TAG=""; A_CODEC=""; A_CHANNELS=""
     while IFS= read -r line; do
         ct=$(kv "$line" codec_type)
         case "$ct" in
@@ -297,9 +268,12 @@ probe_streams() {
                     V_CODEC=$(kv "$line" codec_name); V_TAG=$(kv "$line" codec_tag_string)
                 fi ;;
             audio)
-                [[ -z "$A_CODEC" ]] && A_CODEC=$(kv "$line" codec_name) ;;
+                if [[ -z "$A_CODEC" ]]; then
+                    A_CODEC=$(kv "$line" codec_name)
+                    A_CHANNELS=$(kv "$line" channels | tr -cd '0-9')
+                fi ;;
         esac
-    done < <(ffprobe -v error -show_entries stream=codec_type,codec_name,codec_tag_string \
+    done < <(ffprobe -v error -show_entries stream=codec_type,codec_name,codec_tag_string,channels \
                 -of compact=p=0 "$1" </dev/null 2>/dev/null)
 }
 
@@ -398,8 +372,8 @@ compute_gain_peak() {
 # Sets GAIN_DB, CAL_BITRATE, CAL_PEAK and the accepted error window PEAK_ERR_LO..PEAK_ERR_HI (error = target - peak).
 # Returns 1 only if nothing inside even the fallback window was found.
 audio_gain_filter() {  # maps 2ch (including broken LFE+LFE2 tags) to stereo before volume
-    local src="$1" gain="$2" ch
-    ch=$(ffprobe -v error -select_streams a:0 -show_entries stream=channels -of csv=p=0 "$src" </dev/null 2>/dev/null | head -1 | tr -cd '0-9')
+    local src="$1" gain="$2" ch="${A_CHANNELS:-}"
+    [[ -n "$ch" ]] || ch=$(ffprobe -v error -select_streams a:0 -show_entries stream=channels -of csv=p=0 "$src" </dev/null 2>/dev/null | head -1 | tr -cd '0-9')
     if [[ "$ch" == "2" ]]; then
         printf 'channelmap=0|1:stereo,volume=%sdB' "$gain"
     else
@@ -441,8 +415,8 @@ calibrate_peak() {
                 fb_err="$err"; fb_g="$g"; fb_br="$br"; fb_pk="$pk"; fb_e="$err"
             fi
             if awk -v e="$aerr" -v b="$bbest" 'BEGIN{exit !(e<b)}'; then bbest="$aerr"; bbest_g="$g"; fi
-            if (( k <= 3 )); then g=$(awk -v g="$g" -v e="$derr" 'BEGIN{printf "%.3f", g + e}')
-            else g=$(awk -v g="$bbest_g" -v o="${offs[$(( (k - 4) % ${#offs[@]} ))]}" 'BEGIN{printf "%.3f", g + o}'); fi
+            if (( k <= 5 )); then g=$(awk -v g="$g" -v e="$derr" 'BEGIN{step=(e<0)?e*0.9:e*0.85; printf "%.3f", g + step}')
+            else g=$(awk -v g="$bbest_g" -v o="${offs[$(( (k - 6) % ${#offs[@]} ))]}" 'BEGIN{printf "%.3f", g - o}'); fi
         done
         best_g="$bbest_g"
         log "  CALIBRATE: ${br} could not reach the target within ${PEAK_TOLERANCE} dB (best error ${bbest} dB)"
@@ -685,6 +659,7 @@ on_interrupt() {
     [[ -n "$FF_PID" ]] && kill "$FF_PID" 2>/dev/null && wait "$FF_PID" 2>/dev/null
     [[ -n "$CURRENT_TMP" && -f "$CURRENT_TMP" ]] && rm -f "$CURRENT_TMP"
     [[ -n "$CURRENT_CAL" && -f "$CURRENT_CAL" ]] && rm -f "$CURRENT_CAL"
+    (( ${SCAN_OWNER:-0} == 1 )) && [[ -n "${SCAN_QUEUE:-}" ]] && rm -f "$SCAN_QUEUE"
     log "Video processing interrupted"
     exit 130
 }

@@ -42,7 +42,7 @@ fb_refresh_cookies() {
         return 1
     fi
     printf "${C_BLUE:-}[*] Refreshing Facebook cookies from browser...${C_RESET:-}\n"
-    local raw="$FB_COOKIES.raw" new="$FB_COOKIES.new"
+    local raw="$FB_COOKIES.raw.$$" new="$FB_COOKIES.new.$$"
     rm -f "$raw" "$new"
     yt-dlp --cookies-from-browser "firefox:$tmp" --cookies "$raw" \
            --skip-download --no-playlist -q --no-warnings \

@@ -233,13 +233,19 @@ class H(BaseHTTPRequestHandler):
             s = q.get("status", [""])[0] or None
             if s and s not in ("pending", "running", "done", "failed"):
                 return self.send(400, {"error": "bad status"})
-            lim = max(1, min(int(q.get("limit", ["200"])[0] or 200), 500))
+            try:
+                lim = max(1, min(int(q.get("limit", ["200"])[0] or 200), 500))
+            except ValueError:
+                return self.send(400, {"error": "bad limit"})
             js = sorted(jobs(s), key=lambda j: j["id"], reverse=True)[:lim]
             for j in js:
                 j.pop("key", None)
             return self.send(200, {"jobs": js})
         if u.path == "/api/logs":
-            n = max(1, min(int(q.get("n", ["200"])[0] or 200), 1000))
+            try:
+                n = max(1, min(int(q.get("n", ["200"])[0] or 200), 1000))
+            except ValueError:
+                return self.send(400, {"error": "bad n"})
             return self.send(200, {"lines": tail_log(n, q.get("events", ["0"])[0] == "1")})
         if u.path == "/api/config":
             vals = read_config()

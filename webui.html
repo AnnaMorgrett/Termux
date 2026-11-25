@@ -117,7 +117,7 @@ async function loadCfg(){const c=await api("/api/config");const box=$("cfg");box
   Object.keys(c.values).forEach(k=>{box.appendChild(el("label","",k));box.appendChild(el("div","help",c.help[k]+" Default: "+c.defaults[k]+(c.custom.includes(k)?" (changed)":"")));
     let f;if(c.choices[k]){f=el("select");c.choices[k].forEach(o=>{const op=el("option","",o);op.value=o;f.appendChild(op)})}else{f=el("input");f.type="text";f.inputMode=k==="AUDIO_BITRATE"?"text":"decimal"}
     f.id="cfg_"+k;f.value=c.values[k];box.appendChild(f);
-    if(k==="PEAK_PERCENT"){const r=el("div","help");r.id="peakdb";box.appendChild(r);const upd=()=>{const p=parseFloat(f.value);r.textContent=(isFinite(p)&&p>=0&&p<=100)?"= target peak "+(-9+8.9*p/100).toFixed(2)+" dB":"enter 0 to 100"};f.oninput=upd;upd()}});cfgLoaded=true}
+    if(k==="PEAK_PERCENT"){const r=el("div","help");r.id="peakdb";box.appendChild(r);const upd=()=>{const p=parseFloat(f.value);r.textContent=(isFinite(p)&&p>=0&&p<=100)?"= target peak "+(-9+8.0*p/100).toFixed(2)+" dB":"enter 0 to 100"};f.oninput=upd;upd()}});cfgLoaded=true}
 function cfgValues(){const v={};document.querySelectorAll("[id^=cfg_]").forEach(f=>v[f.id.slice(4)]=f.value.trim());return v}
 
 function poll(){if(document.hidden)return;act(async()=>{await pStatus();if(tab==="queue")await pJobs();if(tab==="logs")await pLogs()})}

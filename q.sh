@@ -116,8 +116,17 @@ case "$cmd" in
     dl)
         [[ $# -ge 1 ]] || { echo "Usage: dl <URL> [extra yt-dlp options...]" >&2; exit 1; }
         url="$1"; shift; extra=(); for o in "$@"; do extra+=("--arg=$o"); done
-        add_one "$url" "${extra[@]}"; [[ $ADD_RC == 2 ]] && exit 2
-        exec bash "$SCRIPT_DIR/worker.sh" ;;
+        if [[ "$url" =~ ^https?://[^[:space:]]+$ ]]; then u="$url"
+        else u=$(printf '%s' "$url" | grep -oE 'https?://[^[:space:]]+' | head -1); fi
+        [[ -n "$u" ]] || { echo "not a link: $url" >&2; exit 2; }
+        out=$(qctl add --url "$u" "${extra[@]}" 2>&1); rc=$?
+        echo "$out"
+        (( rc == 2 )) && exit 2
+        [[ "$out" == *"already done"* ]] && exit 0
+        jid=$(printf '%s' "$out" | grep -oE '[0-9]+' | head -1)
+        start_bg
+        [[ -n "$jid" ]] && exec "$PY" "$SCRIPT_DIR/qctl.py" wait "$jid"
+        ;;
     scan)  scan_folders ;;
     run)   exec bash "$SCRIPT_DIR/worker.sh" ;;
     bg)    start_bg ;;
