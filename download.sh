@@ -72,6 +72,10 @@ printf "${C_BLUE}[*] Destination folder:${C_RESET} %s\n" "$DL_DIR"
 result_args=()
 [[ -n "${DL_RESULT_FILE:-}" ]] && result_args=(--print-to-file "after_move:filepath" "$DL_RESULT_FILE")
 
+# Facebook: optional cookie refresh from the browser (root optional) + impersonation.
+source "$(dirname "${BASH_SOURCE[0]}")/fb_cookies.sh"
+fb_site_args "$url"
+
 # Run as a tracked child so a TERM to this script stops yt-dlp at once.
 YT_PID=""
 trap '[[ -n "$YT_PID" ]] && kill "$YT_PID" 2>/dev/null; exit 143' INT TERM HUP
@@ -81,6 +85,7 @@ yt-dlp \
     -P "$DL_DIR" \
     -o "%(title).100B [%(id)s].%(ext)s" \
     "${result_args[@]}" \
+    "${site_args[@]}" \
     "$@" \
     "$url" &
 YT_PID=$!
