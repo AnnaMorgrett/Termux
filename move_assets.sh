@@ -4,7 +4,7 @@
 #  @brief       Non-video asset scanner, safe relocator, & MediaScanner synchronizer.
 #  @author      Anna Morgrett (https://github.com/AnnaMorgrett/Termux)
 #  @license     MIT
-#  @version     2.1.0
+#  @version     2.2.1
 # ═══════════════════════════════════════════════════════════════════════════════
 set -u
 
@@ -26,20 +26,29 @@ else
     SD="${MEDIA_DIR:-$HOME/TermuxMedia}"
 fi
 
+_SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
+if [[ -f "$_SCRIPT_PATH" ]]; then
+    _ASSET_DIR="$(cd "$(dirname "$_SCRIPT_PATH")" && pwd)"
+else
+    _ASSET_DIR="$PWD"
+fi
+
 readonly INPUT_DIRS=(
     "$SD/DCIM/TikTok"
+    "$SD/Pictures/TikTok"
     "$SD/Download/yt-dlp"
 )
 readonly ASSET_OUT="$SD/Pictures/TikTok_Assets"
-readonly LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/media_processor_log.txt"
+readonly LOG="$_ASSET_DIR/media_processor_log.txt"
 
 # ── Usage & Help ──────────────────────────────────────────────────────────────
 show_help() {
-    cat << EOF
+    cat << HELP
 Usage: move_assets.sh [OPTIONS]
 
 Scans TikTok and yt-dlp folders for non-video assets (photos, stickers, GIFs),
-relocates them safely to Pictures/TikTok_Assets without overwriting, and triggers
+detects extensionless images via magic bytes, restores their extension, relocates
+them safely to Pictures/TikTok_Assets without overwriting, and triggers
 Android's native MediaScanner.
 
 Scanned Directories:
@@ -50,12 +59,12 @@ Target Directory:
   - $ASSET_OUT
 
 Supported Formats:
-  Images:      JPG, JPEG, PNG, BMP, TIFF, TIF, HEIC, HEIF, SVG
+  Images:      JPG, JPEG, PNG, BMP, TIFF, TIF, HEIC, HEIF, AVIF, JXL, SVG (incl. extensionless)
   Animations:  GIF, WEBP
 
 Options:
   -h, --help   Display this documentation.
-EOF
+HELP
 }
 
 if [[ $# -ge 1 && ("$1" == "-h" || "$1" == "--help") ]]; then
@@ -69,23 +78,85 @@ log() {
 }
 
 # ── Deferred media scan: queue now, scan once at the end ─────────────────────
-_ASSET_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -n "${MEDIA_SCAN_QUEUE:-}" ]]; then
     SCAN_QUEUE="$MEDIA_SCAN_QUEUE"; SCAN_OWNER=0
 else
     SCAN_QUEUE="$(mktemp)"; SCAN_OWNER=1
 fi
-queue_scan() { printf '%s
-' "$1" >> "$SCAN_QUEUE"; }
+queue_scan() { printf '%s\n' "$1" >> "$SCAN_QUEUE"; }
 # shellcheck source=scan_lib.sh
-source "$_ASSET_DIR/scan_lib.sh"
+if [[ -f "$_ASSET_DIR/scan_lib.sh" ]]; then
+    source "$_ASSET_DIR/scan_lib.sh"
+else
+    scan_queue() { :; }
+fi
+
+# Detects image format from magic bytes for extensionless / unknown-extension files
+detect_image_ext() {
+    local file="$1" hex
+    hex=$(od -An -tx1 -N 32 "$file" 2>/dev/null | tr -d ' \t\r\n')
+    [[ -z "$hex" ]] && return 1
+
+    case "$hex" in
+        ffd8ff*)
+            printf 'jpg'; return 0 ;;
+        89504e470d0a1a0a*)
+            printf 'png'; return 0 ;;
+        474946383761*|474946383961*)
+            printf 'gif'; return 0 ;;
+        52494646????????57454250*)
+            printf 'webp'; return 0 ;;
+        ff0a*|0000000c4a584c200d0a870a*)
+            printf 'jxl'; return 0 ;;
+        424d????????00000000*)
+            printf 'bmp'; return 0 ;;
+        49492a00*|4d4d002a*)
+            printf 'tiff'; return 0 ;;
+        ????????6674797068656963*|????????6674797068656978*|????????6674797068657663*|????????6674797068657678*)
+            printf 'heic'; return 0 ;;
+        ????????6674797068656966*|????????667479706865696d*|????????6674797068656973*|????????667479706865766d*|????????6674797068657673*|????????667479706d696631*|????????667479706d736631*|????????667479706d696166*)
+            printf 'heif'; return 0 ;;
+        ????????6674797061766966*|????????6674797061766973*)
+            printf 'avif'; return 0 ;;
+    esac
+
+    if head -c 512 "$file" 2>/dev/null | tr -d '\0' | grep -qiE '^[[:space:]]*(<\?xml[^>]*>[[:space:]]*)?<svg\b'; then
+        printf 'svg'
+        return 0
+    fi
+
+    if command -v file >/dev/null 2>&1; then
+        case "$(file -b --mime-type "$file" 2>/dev/null)" in
+            image/jpeg) printf 'jpg'; return 0 ;;
+            image/png) printf 'png'; return 0 ;;
+            image/gif) printf 'gif'; return 0 ;;
+            image/webp) printf 'webp'; return 0 ;;
+            image/jxl) printf 'jxl'; return 0 ;;
+            image/heic) printf 'heic'; return 0 ;;
+            image/heif) printf 'heif'; return 0 ;;
+            image/avif) printf 'avif'; return 0 ;;
+            image/bmp|image/x-ms-bmp) printf 'bmp'; return 0 ;;
+            image/tiff) printf 'tiff'; return 0 ;;
+            image/svg+xml) printf 'svg'; return 0 ;;
+        esac
+    fi
+
+    return 1
+}
 
 get_unique_dest() {
     local dir="$1" fname="$2"
-    local base="${fname%.*}" ext="${fname##*.}" out="$dir/$fname" i=1
-    while [[ -e "$out" ]]; do
-        out="$dir/${base}_$((i++)).$ext"
-    done
+    local out="$dir/$fname" i=1
+    if [[ "$fname" == *.* ]]; then
+        local base="${fname%.*}" ext="${fname##*.}"
+        while [[ -e "$out" ]]; do
+            out="$dir/${base}_$((i++)).$ext"
+        done
+    else
+        while [[ -e "$out" ]]; do
+            out="$dir/${fname}_$((i++))"
+        done
+    fi
     printf '%s' "$out"
 }
 
@@ -100,10 +171,28 @@ for dir in "${INPUT_DIRS[@]}"; do
     [[ -d "$dir" ]] || continue
     while IFS= read -r -d '' src; do
         [[ -f "$src" ]] || continue
-        age=$(( $(date +%s) - $(stat -c %Y "$src" 2>/dev/null || echo 0) ))
-        (( age >= 0 && age < 5 )) && sleep $(( 5 - age ))
         filename=$(basename "$src")
-        dest=$(get_unique_dest "$ASSET_OUT" "$filename")
+        ext_lower=""
+        [[ "$filename" == *.* ]] && ext_lower="${filename##*.}" && ext_lower="${ext_lower,,}"
+
+        case "$ext_lower" in
+            jpg|jpeg|png|gif|webp|bmp|tiff|tif|heic|heif|avif|jxl|svg)
+                age=$(( $(date +%s) - $(stat -c %Y "$src" 2>/dev/null || echo 0) ))
+                (( age >= 0 && age < 5 )) && sleep $(( 5 - age ))
+                dest_name="$filename"
+                ;;
+            mp4|mkv|webm|mov|avi|flv|wmv|m4v|3gp|ts|m4a|mp3|opus|ogg|wav|flac|aac|part|ytdl|tmp|temp|crdownload|json|txt|srt|vtt|ass|lrc|description|info)
+                continue
+                ;;
+            *)
+                age=$(( $(date +%s) - $(stat -c %Y "$src" 2>/dev/null || echo 0) ))
+                (( age >= 0 && age < 5 )) && sleep $(( 5 - age ))
+                detected_ext=$(detect_image_ext "$src") || continue
+                dest_name="${filename}.${detected_ext}"
+                ;;
+        esac
+
+        dest=$(get_unique_dest "$ASSET_OUT" "$dest_name")
 
         if mv -n "$src" "$dest" 2>/dev/null; then
             queue_scan "$dest"
@@ -114,12 +203,7 @@ for dir in "${INPUT_DIRS[@]}"; do
             log "ERROR: Failed moving $filename"
             printf "  ${C_RED}[!] Error moving:${C_RESET} %s\n" "$filename" >&2
         fi
-    done < <(find "$dir" -maxdepth 1 -type f \( \
-                 -iname '*.jpg'  -o -iname '*.jpeg' -o -iname '*.png'  \
-              -o -iname '*.gif'  -o -iname '*.webp' -o -iname '*.bmp'  \
-              -o -iname '*.tiff' -o -iname '*.tif'  -o -iname '*.heic' \
-              -o -iname '*.heif' -o -iname '*.svg'                     \
-             \) -print0 2>/dev/null)
+    done < <(find "$dir" -maxdepth 1 -type f ! -name '.*' -print0 2>/dev/null)
 done
 
 log "Asset stage completed. Relocated count: $moved_count"
