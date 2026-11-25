@@ -195,6 +195,7 @@ for dir in "${INPUT_DIRS[@]}"; do
         dest=$(get_unique_dest "$ASSET_OUT" "$dest_name")
 
         if mv -n "$src" "$dest" 2>/dev/null; then
+            queue_scan "$src"
             queue_scan "$dest"
             log "MOVED: $filename -> $(basename "$dest")"
             printf "  ${C_GREEN}[✓] Relocated:${C_RESET} %s -> %s\n" "$filename" "$(basename "$dest")"
