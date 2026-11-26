@@ -122,4 +122,5 @@ BIN_DIR="$BIN_DIR" bash "$TARGET_DIR/shortcuts.sh"
 printf "\n${C_GREEN}[✓] Setup complete!${C_RESET}\n"
 printf "  • Share any link from Facebook/Chrome/TikTok -> Share -> Termux\n"
 printf "  • Run ${C_BOLD}tiktok${C_RESET} to process saved TikTok/yt-dlp folders\n"
-printf "  • Run ${C_BOLD}dl <URL>${C_RESET} to download and normalize directly\n"
+printf "  • Run ${C_BOLD}dl <URL>${C_RESET} to download and no
+rmalize directly\n"
