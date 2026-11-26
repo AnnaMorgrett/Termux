@@ -29,6 +29,7 @@ if [[ -n "${MEDIA_SCAN_QUEUE:-}" ]]; then
     SCAN_QUEUE="$MEDIA_SCAN_QUEUE"; SCAN_OWNER=0
 else
     SCAN_QUEUE="$(mktemp)"; SCAN_OWNER=1
+    trap 'rm -f "$SCAN_QUEUE"' EXIT
 fi
 queue_scan() { printf '%s\n' "$1" >> "$SCAN_QUEUE"; }
 # shellcheck source=media_scan.sh
@@ -78,7 +79,8 @@ detect_image_ext() {
 }
 
 get_unique_dest() {
-    local dir="$1" fname="$2" out="$dir/$fname" i=1
+    local dir="$1" fname="$2"
+    local out="$dir/$fname" i=1
     if [[ "$fname" == *.* ]]; then
         local base="${fname%.*}" ext="${fname##*.}"
         while [[ -e "$out" ]]; do out="$dir/${base}_$((i++)).$ext"; done
@@ -118,7 +120,7 @@ for dir in "${INPUT_DIRS[@]}"; do
         esac
 
         dest=$(get_unique_dest "$ASSET_OUT" "$dest_name")
-        if mv -n "$src" "$dest" 2>/dev/null; then
+        if [[ -n "$dest" ]] && mv -n "$src" "$dest" 2>/dev/null; then
             queue_scan "$src"
             queue_scan "$dest"
             log "MOVED: $filename -> $(basename "$dest")"
