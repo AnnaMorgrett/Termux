@@ -17,6 +17,13 @@ readonly REPO_URL="https://github.com/AnnaMorgrett/Termux.git"
 readonly TARGET_DIR="/storage/emulated/0/Termux"
 BIN_DIR="${PREFIX:-/data/data/com.termux/files/usr}/bin"
 
+cleanup_dir() {
+    local dir="$1"
+    [[ -e "$dir" ]] || return 0
+    chmod -R u+rwX "$dir" 2>/dev/null || true
+    rm -rf "$dir"
+}
+
 printf "${C_BOLD}==================================================${C_RESET}\n"
 printf "${C_BOLD}  Termux Media Pipeline Installer                 ${C_RESET}\n"
 printf "${C_BOLD}==================================================${C_RESET}\n"
@@ -43,7 +50,7 @@ install_bvc2_ffmpeg() {
     local bvc2_dir="$prefix/opt/ffmpeg-bvc2"
     local state_dir="$prefix/var/lib/media-pipeline"
     local state_file="$state_dir/ffmpeg-bvc2-asset-updated"
-    local release_json asset_url asset_updated tmp extract src_root backup
+    local release_json asset_url asset_updated tmp extract src_root backup decoders_out
     local -a release_info=()
 
     printf "${C_BLUE}[3/4] Checking ARM64 BVC2 FFmpeg release...${C_RESET}\n"
@@ -55,10 +62,12 @@ install_bvc2_ffmpeg() {
     [[ "${#release_info[@]}" -eq 2 ]] || return 0
     asset_url="${release_info[0]}"; asset_updated="${release_info[1]}"
 
-    if [[ -x "$bvc2_dir/bin/ffmpeg" && -x "$bvc2_dir/bin/ffprobe" && -f "$state_file" && "$(cat "$state_file")" == "$asset_updated" ]] \
-        && "$bvc2_dir/bin/ffmpeg" -hide_banner -decoders 2>/dev/null | grep -Eq '[[:space:]]bvc2[[:space:]]'; then
-        printf "${C_GREEN}[✓] BVC2 FFmpeg is up to date.${C_RESET}\n"
-        return 0
+    if [[ -x "$bvc2_dir/bin/ffmpeg" && -x "$bvc2_dir/bin/ffprobe" && -f "$state_file" && "$(cat "$state_file")" == "$asset_updated" ]]; then
+        decoders_out="$("$bvc2_dir/bin/ffmpeg" -hide_banner -decoders 2>/dev/null || true)"
+        if grep -Eq '[[:space:]]bvc2[[:space:]]' <<< "$decoders_out"; then
+            printf "${C_GREEN}[✓] BVC2 FFmpeg is up to date.${C_RESET}\n"
+            return 0
+        fi
     fi
 
     tmp="$(mktemp -d "$prefix/tmp/ffmpeg-bvc2.XXXXXX")"
@@ -66,15 +75,15 @@ install_bvc2_ffmpeg() {
 
     if ! curl -fL --retry 3 --connect-timeout 30 "$asset_url" -o "$tmp/ffmpeg-bvc2.tar.xz"; then
         printf "${C_YELLOW}[!] BVC2 download failed; retaining system FFmpeg.${C_RESET}\n"
-        rm -rf "$tmp"; return 0
+        cleanup_dir "$tmp"; return 0
     fi
 
-    if ! tar -xJf "$tmp/ffmpeg-bvc2.tar.xz" -C "$extract"; then
+    if ! tar --no-same-permissions -xJf "$tmp/ffmpeg-bvc2.tar.xz" -C "$extract"; then
         printf "${C_YELLOW}[!] BVC2 archive extraction failed; retaining system FFmpeg.${C_RESET}\n"
-        rm -rf "$tmp"; return 0
+        cleanup_dir "$tmp"; return 0
     fi
+    chmod -R u+rwX "$extract" 2>/dev/null || true
 
-    # Support both flat (bin/ffmpeg) and single-directory nested archives
     if [[ -f "$extract/bin/ffmpeg" ]]; then
         src_root="$extract"
     else
@@ -84,26 +93,29 @@ install_bvc2_ffmpeg() {
 
     if [[ -z "$src_root" || ! -f "$src_root/bin/ffmpeg" ]]; then
         printf "${C_YELLOW}[!] BVC2 archive missing bin/ffmpeg; retaining system FFmpeg.${C_RESET}\n"
-        rm -rf "$tmp"; return 0
+        cleanup_dir "$tmp"; return 0
     fi
 
     chmod +x "$src_root/bin/"* 2>/dev/null || true
 
-    if ! LD_LIBRARY_PATH="$src_root/lib:${LD_LIBRARY_PATH:-}" "$src_root/bin/ffmpeg" -hide_banner -decoders 2>/dev/null | grep -Eq '[[:space:]]bvc2[[:space:]]'; then
+    # Capture output first to avoid SIGPIPE exit 141 when grep -q exits early under pipefail
+    decoders_out="$("$src_root/bin/ffmpeg" -hide_banner -decoders 2>/dev/null || true)"
+    if ! grep -Eq '[[:space:]]bvc2[[:space:]]' <<< "$decoders_out"; then
         printf "${C_YELLOW}[!] BVC2 binary failed decoder check; retaining system FFmpeg.${C_RESET}\n"
-        rm -rf "$tmp"; return 0
+        cleanup_dir "$tmp"; return 0
     fi
 
     mkdir -p "$prefix/opt" "$state_dir"
-    backup="$bvc2_dir.previous"; rm -rf "$backup"
+    backup="$bvc2_dir.previous"; cleanup_dir "$backup"
     [[ -d "$bvc2_dir" ]] && mv "$bvc2_dir" "$backup"
     if mv "$src_root" "$bvc2_dir"; then
         printf "%s\n" "$asset_updated" > "$state_file"
-        rm -rf "$backup" "$tmp"
+        cleanup_dir "$backup"
+        cleanup_dir "$tmp"
         printf "${C_GREEN}[✓] BVC2 FFmpeg installed.${C_RESET}\n"
     else
         [[ -d "$backup" ]] && mv "$backup" "$bvc2_dir"
-        rm -rf "$tmp"
+        cleanup_dir "$tmp"
     fi
 }
 install_bvc2_ffmpeg
@@ -122,5 +134,4 @@ BIN_DIR="$BIN_DIR" bash "$TARGET_DIR/shortcuts.sh"
 printf "\n${C_GREEN}[✓] Setup complete!${C_RESET}\n"
 printf "  • Share any link from Facebook/Chrome/TikTok -> Share -> Termux\n"
 printf "  • Run ${C_BOLD}tiktok${C_RESET} to process saved TikTok/yt-dlp folders\n"
-printf "  • Run ${C_BOLD}dl <URL>${C_RESET} to download and no
-rmalize directly\n"
+printf "  • Run ${C_BOLD}dl <URL>${C_RESET} to download and normalize directly\n"
